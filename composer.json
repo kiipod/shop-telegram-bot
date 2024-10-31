@@ -1,0 +1,25 @@
+{
+    "name": "kiipod/shop-telegram-bot",
+    "description": "test telegram shop bot",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Kiipod\\ShopTelegramBot\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Kirill Podryadov",
+            "email": "iamkir90@hotmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "guzzlehttp/guzzle": "^7.2"
+    },
+    "require_dev": {
+        "friendsofphp/php-cs-fixer": "^3.48"
+    },
+    "minimum-stability": "stable"
+}
