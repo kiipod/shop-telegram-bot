@@ -1,0 +1,25 @@
+{
+  "name": "shop-telegram-bot",
+  "version": "1.0.0",
+  "description": "test telegram shop bot",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kiipod/shop-telegram-bot.git"
+  },
+  "keywords": [
+    "telegram",
+    "bot"
+  ],
+  "author": "kiipod",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kiipod/shop-telegram-bot/issues"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "10.x"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.14"
+  }
+}
