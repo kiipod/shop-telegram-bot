@@ -1,0 +1,59 @@
+version: '3.9'
+
+networks:
+    bot-network:
+
+services:
+    nginx:
+        build: ./docker/Nginx
+        container_name: nginx
+        ports:
+            - ${WEB_PORT}:${WEB_PORT}
+        volumes:
+            - ${LOCAL_PATH_HOST}:${APP_PATH}
+            - ./docker/Nginx/core:/etc/nginx/
+            - ./docker/Nginx/logs:/var/log/nginx/
+        depends_on:
+            - app
+        networks:
+            - bot-network
+
+    app:
+        build:
+            context: ./docker/PHP8
+            args:
+                docker_user: ${DOCKER_USER}
+        container_name: app
+        volumes:
+            - ${LOCAL_PATH_HOST}:${APP_PATH}
+        depends_on:
+            - mysql
+        networks:
+            - bot-network
+
+    mysql:
+        image: mysql/mysql-server:8.0
+        container_name: mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        volumes:
+            - ./docker/MySQL/lib:/var/lib/mysql
+            - ./docker/MySQL/dump:/docker-entrypoint-initdb.d
+        ports:
+            - ${MYSQL_PORT}:${MYSQL_PORT}
+        networks:
+            - bot-network
+
+    npm:
+        build: ./docker/Node
+        container_name: npm
+        volumes:
+            - ${LOCAL_PATH_HOST}:${APP_PATH}:cached
+            - ${LOCAL_PATH_HOST}.env:${APP_PATH}/.env
+        working_dir: ${APP_PATH}
+        profiles: ["npm"]
+        entrypoint: ['npm']
+        ports:
+            - ${VITE_PORT}:${VITE_PORT}
+        networks:
+            - bot-network
