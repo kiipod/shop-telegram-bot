@@ -12,3 +12,4 @@ yarn-error.log
 *cache
 docker/MySQL/lib
 docker/Nginx/logs
+public/css/output.css

@@ -16,7 +16,8 @@
     ],
     "require": {
         "php": "^8.3",
-        "guzzlehttp/guzzle": "^7.2"
+        "guzzlehttp/guzzle": "^7.2",
+        "ext-pdo": "*"
     },
     "require_dev": {
         "friendsofphp/php-cs-fixer": "^3.48"
