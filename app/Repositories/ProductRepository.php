@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Kiipod\ShopTelegramBot\Repositories;
 
-use Kiipod\ShopTelegramBot\Database\MysqlService;
+use Kiipod\ShopTelegramBot\Database\MysqlClient;
 use PDO;
 use PDOException;
 
 class ProductRepository implements ProductRepositories
 {
-    private MysqlService $db;
+    private MysqlClient $db;
 
     public function __construct()
     {
-        $this->db = new MysqlService();
+        $this->db = new MysqlClient();
         $this->db->connect('mysql', 'root', 'password', 'shop');
     }
 

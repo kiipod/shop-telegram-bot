@@ -7,7 +7,7 @@ namespace Kiipod\ShopTelegramBot\Database;
 use PDO;
 use PDOException;
 
-class MysqlService implements Database
+class MysqlClient implements Database
 {
     private ?PDO $pdo = null;
 
