@@ -1,5 +1,8 @@
 <?php
 
-require_once "../vendor/autoload.php";
+require __DIR__ . '/../vendor/autoload.php';
 
-phpinfo();
+use Kiipod\ShopTelegramBot\View\Controller\Index;
+
+$indexController = new Index();
+$indexController->index();
