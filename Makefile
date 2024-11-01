@@ -29,3 +29,7 @@ npm-update:
 	docker-compose run --rm --service-ports $(app-npm) update $(c)
 npm-build:
 	docker-compose run --rm --service-ports $(app-npm) run build $(c)
+
+#TAILWIND
+tailwind-build:
+	npx tailwindcss -i ./public/css/app.css -o ./public/css/output.css --watch
