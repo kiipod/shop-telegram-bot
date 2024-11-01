@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Telegram;
+namespace Kiipod\ShopTelegramBot\Telegram;
 
 class TelegramService
 {
