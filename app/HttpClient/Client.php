@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace HttpClient;
+namespace Kiipod\ShopTelegramBot\HttpClient;
 
 interface Client
 {
