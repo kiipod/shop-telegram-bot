@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Helpers;
+namespace Kiipod\ShopTelegramBot\Helpers;
 
 class TemplateHelper
 {
@@ -15,10 +15,12 @@ class TemplateHelper
      */
     public function includeTemplate(string $name, array $data = []): string
     {
-        $name = 'templates/' . $name;
+        $name = '/app/public/templates/' . $name;
         $result = '';
 
+        // Проверяем, доступен ли файл для чтения
         if (!is_readable($name)) {
+            echo "Шаблон $name не найден или недоступен для чтения.";
             return $result;
         }
 
