@@ -7,7 +7,7 @@ namespace Kiipod\ShopTelegramBot\View\Controller;
 use Kiipod\ShopTelegramBot\Helpers\TemplateHelper;
 use Kiipod\ShopTelegramBot\Repositories\ProductRepository;
 
-class Index
+class IndexController
 {
     /**
      * Метод отвечает за рендер index.php
