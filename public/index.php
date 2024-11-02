@@ -2,7 +2,7 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Kiipod\ShopTelegramBot\View\Controller\Index;
+use Kiipod\ShopTelegramBot\View\Controller\IndexController;
 
-$indexController = new Index();
+$indexController = new IndexController();
 $indexController->index();
