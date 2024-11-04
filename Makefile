@@ -10,6 +10,12 @@ docker-up:
 docker-down:
 	docker compose down --remove-orphans
 
+#PRODUCTION
+docker-up-prod:
+	docker compose -f docker-compose-production.yml up -d
+docker-down-prod:
+	docker compose -f docker-compose-production.yml down -v --remove-orphans
+
 #MYSQL
 mysql-dump:
 	docker exec -i $(mysql) mysql -uroot -ppassword shop < tlg_dump.sql

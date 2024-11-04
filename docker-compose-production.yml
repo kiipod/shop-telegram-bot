@@ -1,0 +1,57 @@
+version: '3.9'
+
+networks:
+  bot-network:
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/prod/Nginx/Dockerfile
+    container_name: nginx
+    ports:
+      - ${WEB_PORT}:${WEB_PORT}
+    volumes:
+      - vendor:/app/vendor
+    networks:
+      - bot-network
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/prod/App/Dockerfile
+    container_name: app
+    volumes:
+      - vendor:/app/vendor
+    networks:
+      - bot-network
+
+  mysql:
+    build:
+      context: .
+      dockerfile: docker/prod/MySQL/Dockerfile
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_USER_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      - bot-network
+
+  npm:
+    build:
+      context: .
+      dockerfile: docker/prod/Node/Dockerfile
+    container_name: npm
+    working_dir: ${APP_PATH}
+    profiles: ["npm"]
+    entrypoint: ['npm']
+    networks:
+      - bot-network
+
+volumes:
+  vendor:
+  mysql:
