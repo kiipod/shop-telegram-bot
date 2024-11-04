@@ -10,6 +10,6 @@ yarn-error.log
 /.idea
 /.vscode
 *cache
-docker/MySQL/lib
-docker/Nginx/logs
+docker/dev/MySQL/lib
+docker/dev/Nginx/logs
 public/images
