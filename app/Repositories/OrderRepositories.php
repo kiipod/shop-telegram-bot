@@ -6,5 +6,5 @@ namespace Kiipod\ShopTelegramBot\Repositories;
 
 interface OrderRepositories
 {
-    //
+    public function createOrder(int $productId, int $productCount, string $phone);
 }
