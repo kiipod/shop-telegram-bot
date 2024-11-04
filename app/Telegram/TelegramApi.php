@@ -4,56 +4,54 @@ declare(strict_types=1);
 
 namespace Kiipod\ShopTelegramBot\Telegram;
 
-class TelegramWebhook
+class TelegramApi
 {
     private string $apiUrl;
     private string $botToken;
 
     /**
-     * @param string $botToken
+     * @param $botToken
      */
-    public function __construct(string $botToken)
+    public function __construct($botToken)
     {
         $this->botToken = $botToken;
         $this->apiUrl = "https://api.telegram.org/bot" . $this->botToken . "/";
     }
 
     /**
-     * Устанавливает webhook для Telegram-бота
+     * Получает chat_id нового подписчика
+     * Используется при получении обновлений через вебхук.
      *
-     * @param string $webhookUrl
-     * @return bool
+     * @return int|null
      */
-    public function setWebhook(string $webhookUrl): bool
-    {
-        $url = $this->apiUrl . "setWebhook";
-        $response = $this->sendRequest($url, ['url' => $webhookUrl]);
-
-        return isset($response['ok']) && $response['ok'];
-    }
-
-    /**
-     * Удаляет webhook, если он больше не нужен
-     *
-     * @return bool
-     */
-    public function deleteWebhook(): bool
-    {
-        $url = $this->apiUrl . "deleteWebhook";
-        $response = $this->sendRequest($url);
-
-        return isset($response['ok']) && $response['ok'];
-    }
-
-    /**
-     * Обрабатывает входящие обновления от Telegram
-     *
-     * @return array|null
-     */
-    public function getUpdate(): ?array
+    public function getNewSubscriberChatId(): ?int
     {
         $update = file_get_contents("php://input");
-        return json_decode($update, true);
+        $data = json_decode($update, true);
+
+        if (isset($data['message']['chat']['id'])) {
+            return $data['message']['chat']['id'];
+        }
+
+        return null;
+    }
+
+    /**
+     * Отправляет сообщение пользователю с указанным chat_id
+     *
+     * @param int $chatId
+     * @param string $message
+     * @return bool
+     */
+    public function sendMessage(int $chatId, string $message): bool
+    {
+        $url = $this->apiUrl . "sendMessage";
+        $response = $this->sendRequest($url, [
+            'chat_id' => $chatId,
+            'text' => $message,
+        ]);
+
+        return isset($response['ok']) && $response['ok'];
     }
 
     /**
@@ -72,11 +70,9 @@ class TelegramWebhook
                 'content' => json_encode($data),
             ],
         ];
-
         $context = stream_context_create($options);
         $result = file_get_contents($url, false, $context);
 
         return $result ? json_decode($result, true) : null;
     }
 }
-
