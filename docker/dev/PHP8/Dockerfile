@@ -62,6 +62,6 @@ RUN chmod 777 -R /var/run && chmod o+t -R /var/run
 
 RUN mv /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 
-COPY ./conf.d /usr/local/etc/php/conf.d
+COPY conf.d /usr/local/etc/php/conf.d
 
 USER ${user}
