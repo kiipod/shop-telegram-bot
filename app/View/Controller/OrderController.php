@@ -7,6 +7,7 @@ namespace Kiipod\ShopTelegramBot\View\Controller;
 use Kiipod\ShopTelegramBot\Helpers\TemplateHelper;
 use Kiipod\ShopTelegramBot\Repositories\OrderRepository;
 use Kiipod\ShopTelegramBot\Repositories\ProductRepository;
+use Kiipod\ShopTelegramBot\Telegram\TelegramApi;
 
 class OrderController
 {
@@ -37,6 +38,7 @@ class OrderController
     public function create(): void
     {
         $orderRepository = new OrderRepository();
+        $telegramApi = new TelegramApi('8160278396:AAEhWW3AMxHvilo6XAouWSUee9GA0dnGm9o');
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $productId = (int)$_POST['product_id'];
@@ -48,6 +50,17 @@ class OrderController
 
             if ($orderId) {
                 echo "Заказ успешно добавлен! ID заказа: " . $orderId;
+
+                // Получаем chat_id нового подписчика
+                $chatId = $telegramApi->getNewSubscriberChatId();
+
+                // Проверяем, есть ли chat_id, и отправляем сообщение
+                if ($chatId) {
+                    $message = "Ваш заказ успешно создан! Номер заказа: $orderId.";
+                    $telegramApi->sendMessage($chatId, $message);
+                } else {
+                    echo "Ошибка: chat_id не найден. Сообщение не отправлено.";
+                }
             } else {
                 echo "Ошибка при добавлении заказа.";
             }
