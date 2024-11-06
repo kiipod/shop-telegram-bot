@@ -48,12 +48,16 @@ class Webhook
     /**
      * Обрабатывает входящие обновления от Telegram
      *
-     * @return array|null
+     * @return void
      */
-    public function getUpdate(): ?array
+    public function getUpdate(): void
     {
         $update = file_get_contents("php://input");
-        return json_decode($update, true);
+        $data = json_decode($update, true);
+
+        if ($data) {
+            $this->handleCommands($data);
+        }
     }
 
     /**
@@ -77,6 +81,41 @@ class Webhook
         $result = file_get_contents($url, false, $context);
 
         return $result ? json_decode($result, true) : null;
+    }
+
+    /**
+     * Обрабатывает команды, приходящие от пользователя
+     *
+     * @param array $data
+     */
+    private function handleCommands(array $data): void
+    {
+        $telegramApi = new TelegramApi($this->botToken);
+
+        if (isset($data['message'])) {
+            $chatId = $data['message']['chat']['id'];
+            $text = $data['message']['text'] ?? '';
+
+            // Пример обработки текстовых команд
+            if ($text === '/start') {
+                $telegramApi->sendMessage($chatId, "Добро пожаловать в бот самого полезного магазина!");
+            } else {
+                $telegramApi->sendMessage($chatId, "Неизвестная команда.");
+            }
+        }
+
+        // Обработка callback-query
+        if (isset($data['callback_query'])) {
+            $chatId = $data['callback_query']['message']['chat']['id'];
+            $callbackData = $data['callback_query']['data'];
+
+            // Пример обработки callback-query
+            if ($callbackData === 'action_1') {
+                $telegramApi->sendMessage($chatId, "Вы выбрали действие 1.");
+            } else {
+                $telegramApi->sendMessage($chatId, "Неизвестное действие.");
+            }
+        }
     }
 }
 

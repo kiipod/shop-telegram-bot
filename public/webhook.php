@@ -13,3 +13,5 @@ if ($telegramWebhook->setWebhook($webhookUrl)) {
 } else {
     echo "Ошибка при установке webhook.";
 }
+
+$telegramWebhook->getUpdate();
