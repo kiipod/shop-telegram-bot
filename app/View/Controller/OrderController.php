@@ -37,6 +37,7 @@ class OrderController
      */
     public function create(): void
     {
+        $productRepository = new ProductRepository();
         $orderRepository = new OrderRepository();
         $telegramApi = new TelegramApi('8160278396:AAEhWW3AMxHvilo6XAouWSUee9GA0dnGm9o');
 
@@ -50,13 +51,21 @@ class OrderController
 
             if ($orderId) {
                 echo "Заказ успешно добавлен! ID заказа: " . $orderId;
+                $product = $productRepository->getProductById($orderId);
 
                 // Получаем chat_id нового подписчика
                 $chatId = $telegramApi->getNewSubscriberChatId();
 
                 // Проверяем, есть ли chat_id, и отправляем сообщение
                 if ($chatId) {
-                    $message = "Ваш заказ успешно создан! Номер заказа: $orderId.";
+                    // Формируем сообщение с деталями заказа
+                    $message = "Ваш заказ успешно создан!\n";
+                    $message .= "Номер заказа: $orderId\n";
+                    $message .= "Товар: {$product['name']}\n";
+                    $message .= "Количество: $productCount\n";
+                    $message .= "Цена за единицу: " . number_format($product['price'], 2) . " ₽\n";
+                    $message .= "Итого: " . number_format($product['price'] * $productCount, 2) . " ₽";
+
                     $telegramApi->sendMessage($chatId, $message);
                 } else {
                     echo "Ошибка: chat_id не найден. Сообщение не отправлено.";
