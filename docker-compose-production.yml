@@ -15,6 +15,18 @@ services:
     networks:
       - bot-network
       - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.nginx.rule=Host(`kiipod.ru`) || Host(`www.kiipod.ru`)
+      - traefik.http.services.nginx.loadBalancer.server.port=80
+      - traefik.http.middlewares.nginx-redirect.redirectRegex.regex=^(https?://)www.kiipod.ru/(.*)$$
+      - traefik.http.middlewares.nginx-redirect.redirectRegex.replacement=$${1}kiipod.ru/$${2}
+      - traefik.http.middlewares.nginx-redirect.redirectRegex.permanent=true
+      - traefik.http.routers.nginx.middlewares=nginx-redirect,secure-headers
+      - traefik.http.routers.nginx.entryPoints=https
+      - traefik.http.routers.nginx.tls=true
+      - traefik.http.routers.nginx.tls.certResolver=letsEncrypt
 
   app:
     build:
