@@ -2,6 +2,7 @@ version: '3.9'
 
 networks:
   bot-network:
+  traefik-public:
 
 services:
   nginx:
@@ -9,12 +10,11 @@ services:
       context: .
       dockerfile: docker/prod/Nginx/Dockerfile
     container_name: nginx
-    ports:
-      - ${WEB_PORT}:${WEB_PORT}
     volumes:
       - vendor:/app/vendor
     networks:
       - bot-network
+      - traefik-public
 
   app:
     build:
