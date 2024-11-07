@@ -5,14 +5,14 @@ networks:
 
 services:
     nginx:
-        build: ./docker/Nginx
+        build: ./docker/dev/Nginx
         container_name: nginx
         ports:
             - ${WEB_PORT}:${WEB_PORT}
         volumes:
             - ${LOCAL_PATH_HOST}:${APP_PATH}
-            - ./docker/Nginx/core:/etc/nginx/
-            - ./docker/Nginx/logs:/var/log/nginx/
+            - ./docker/dev/Nginx/core:/etc/nginx/
+            - ./docker/dev/Nginx/logs:/var/log/nginx/
         depends_on:
             - app
         networks:
@@ -20,9 +20,7 @@ services:
 
     app:
         build:
-            context: ./docker/PHP8
-            args:
-                docker_user: ${DOCKER_USER}
+            context: ./docker/dev/PHP8
         container_name: app
         volumes:
             - ${LOCAL_PATH_HOST}:${APP_PATH}
@@ -37,15 +35,15 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
         volumes:
-            - ./docker/MySQL/lib:/var/lib/mysql
-            - ./docker/MySQL/dump:/docker-entrypoint-initdb.d
+            - ./docker/dev/MySQL/lib:/var/lib/mysql
+            - ./docker/dev/MySQL/dump:/docker-entrypoint-initdb.d
         ports:
             - ${MYSQL_PORT}:${MYSQL_PORT}
         networks:
             - bot-network
 
     npm:
-        build: ./docker/Node
+        build: ./docker/dev/Node
         container_name: npm
         volumes:
             - ${LOCAL_PATH_HOST}:${APP_PATH}:cached
@@ -53,7 +51,5 @@ services:
         working_dir: ${APP_PATH}
         profiles: ["npm"]
         entrypoint: ['npm']
-        ports:
-            - ${VITE_PORT}:${VITE_PORT}
         networks:
             - bot-network
