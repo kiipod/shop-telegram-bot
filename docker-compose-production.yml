@@ -3,6 +3,7 @@ version: '3.9'
 networks:
   bot-network:
   traefik-public:
+    external: true
 
 services:
   nginx:
