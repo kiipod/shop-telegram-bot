@@ -67,7 +67,7 @@ RUN adduser -D -u 1000 ${user}
 RUN addgroup ${user} www-data
 
 # Настройка прав
-RUN chown -R www-data:www-data /app
+RUN chown -R docker:www-data /app
 
 RUN chmod 777 -R /tmp && chmod o+t -R /tmp
 RUN chmod 777 -R /var/log && chmod o+t -R /var/log
