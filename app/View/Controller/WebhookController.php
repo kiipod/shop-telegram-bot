@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Kiipod\ShopTelegramBot\View\Controller;
 
 use Exception;
-use Kiipod\ShopTelegramBot\Handlers\CommandHandler;
+use Kiipod\ShopTelegramBot\Telegram\CommandHandler;
 use Kiipod\ShopTelegramBot\Helpers\EnvHelper;
 use Kiipod\ShopTelegramBot\Helpers\TemplateHelper;
 use Kiipod\ShopTelegramBot\Repositories\UserRepository;

@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kiipod\ShopTelegramBot\Handlers;
-
-use Kiipod\ShopTelegramBot\Telegram\TelegramApi;
+namespace Kiipod\ShopTelegramBot\Telegram;
 
 class CommandHandler
 {
