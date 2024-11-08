@@ -15,6 +15,8 @@ use Kiipod\ShopTelegramBot\Telegram\TelegramApi;
 class OrderController
 {
     /**
+     * Метод отвечает за показ страницы с формой заказа
+     *
      * @param int $productId
      * @return void
      */
@@ -32,6 +34,8 @@ class OrderController
     }
 
     /**
+     * Метод отвечает за создание нового заказа
+     *
      * @return void
      * @throws Exception
      */
@@ -54,7 +58,7 @@ class OrderController
             $orderId = $orderRepository->createOrder($productId, $productCount);
 
             if ($orderId) {
-                echo "Заказ успешно добавлен! ID заказа: " . $orderId . "\n";
+                echo "Заказ успешно добавлен! ID заказа: " . $orderId . " \n";
                 $product = $productRepository->getProductById($orderId);
 
                 // Получаем chat_id нового подписчика

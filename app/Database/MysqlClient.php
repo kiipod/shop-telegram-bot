@@ -12,7 +12,7 @@ class MysqlClient implements Database
     private ?PDO $pdo = null;
 
     /**
-     * Подключается к базе данных и сохраняет соединение в $this->pdo
+     * Метод подключается к базе данных и сохраняет соединение в $this->pdo
      *
      * @param string $host
      * @param string $user
@@ -38,7 +38,7 @@ class MysqlClient implements Database
     }
 
     /**
-     * Получить подключение к базе данных
+     * Метод получает подключение к базе данных
      *
      * @return PDO|null
      */

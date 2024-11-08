@@ -20,6 +20,7 @@
 *.jpg  binary
 *.gif  binary
 *.ttf  binary
+*.pdf  binary
 
 # Ignore some meta files when creating an archive of this repository
 /.github            export-ignore

@@ -32,6 +32,8 @@ class UserRepository implements UserRepositories
     }
 
     /**
+     * Метод добавляет нового пользователя в БД по chat_id
+     *
      * @param int $chatId
      * @return int|null
      */
@@ -63,6 +65,8 @@ class UserRepository implements UserRepositories
     }
 
     /**
+     * Метод осуществляет поиск последнего нового подписчика в БД
+     *
      * @return int|null
      */
     public function getNewSubscriberChatId(): ?int
@@ -86,6 +90,32 @@ class UserRepository implements UserRepositories
         }
 
         // Возвращаем null, если соединение не установлено
+        return null;
+    }
+
+    /**
+     * Метод отвечает за поиск chat_id в БД
+     *
+     * @param int $chatId
+     * @return array|null
+     */
+    public function findByChatId(int $chatId): ?array
+    {
+        $pdo = $this->db->getConnection();
+
+        if ($pdo) {
+            try {
+                $stmt = $pdo->prepare('SELECT * FROM users WHERE chat_id = :chat_id');
+                $stmt->execute(['chat_id' => $chatId]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                return $user ?: null;
+            } catch (PDOException $e) {
+                echo "Ошибка поиска пользователя: " . $e->getMessage();
+                return null;
+            }
+        }
+
         return null;
     }
 }

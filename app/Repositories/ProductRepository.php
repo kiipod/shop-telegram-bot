@@ -32,9 +32,9 @@ class ProductRepository implements ProductRepositories
     }
 
     /**
-     * Получить список продуктов из базы данных
+     * Метод получает список продуктов из базы данных
      *
-     * @return array|null Массив продуктов или null в случае ошибки
+     * @return array|null
      */
     public function getProducts(): ?array
     {

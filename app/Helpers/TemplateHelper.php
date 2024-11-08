@@ -7,7 +7,7 @@ namespace Kiipod\ShopTelegramBot\Helpers;
 class TemplateHelper
 {
     /**
-     * Подключает шаблон, передает туда данные и возвращает итоговый HTML контент
+     * Метод подключает шаблон, передает туда данные и возвращает итоговый HTML контент
      *
      * @param string $name
      * @param array $data

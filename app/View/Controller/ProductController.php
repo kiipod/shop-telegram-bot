@@ -11,6 +11,8 @@ use Kiipod\ShopTelegramBot\Repositories\ProductRepository;
 class ProductController
 {
     /**
+     * Метод отвечает за рендеринг страницы с созданием продукта
+     *
      * @return void
      */
     public function create(): void
@@ -57,9 +59,9 @@ class ProductController
             }
         }
 
-        // Отображаем форму добавления с возможным сообщением об ошибке
         $content = $templateHelper->includeTemplate('create-product.php', ['error' => $error ?? null]);
         $layout = $templateHelper->includeTemplate('layout.php', ['content' => $content]);
+
         print($layout);
     }
 }
