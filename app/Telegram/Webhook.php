@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Kiipod\ShopTelegramBot\Telegram;
 
-use Kiipod\ShopTelegramBot\Repositories\UserRepository;
-
 class Webhook
 {
     private string $apiUrl;
@@ -21,49 +19,7 @@ class Webhook
     }
 
     /**
-     * Устанавливает webhook для Telegram-бота
-     *
-     * @param string $webhookUrl
-     * @return bool
-     */
-    public function setWebhook(string $webhookUrl): bool
-    {
-        $url = $this->apiUrl . "setWebhook";
-        $response = $this->sendRequest($url, ['url' => $webhookUrl]);
-
-        return isset($response['ok']) && $response['ok'];
-    }
-
-    /**
-     * Удаляет webhook, если он больше не нужен
-     *
-     * @return bool
-     */
-    public function deleteWebhook(): bool
-    {
-        $url = $this->apiUrl . "deleteWebhook";
-        $response = $this->sendRequest($url);
-
-        return isset($response['ok']) && $response['ok'];
-    }
-
-    /**
-     * Обрабатывает входящие обновления от Telegram
-     *
-     * @return void
-     */
-    public function getUpdate(): void
-    {
-        $update = file_get_contents("php://input");
-        $data = json_decode($update, true);
-
-        if ($data) {
-            $this->handleCommands($data);
-        }
-    }
-
-    /**
-     * Отправляет запрос к Telegram API
+     * Метод отправляет запрос к Telegram API
      *
      * @param string $url
      * @param array $data
@@ -86,42 +42,41 @@ class Webhook
     }
 
     /**
-     * Обрабатывает команды, приходящие от пользователя
+     * Метод устанавливает webhook
      *
-     * @param array $data
+     * @param string $webhookUrl
+     * @return bool
      */
-    private function handleCommands(array $data): void
+    public function setWebhook(string $webhookUrl): bool
     {
-        $userRepository = new UserRepository();
-        $telegramApi = new TelegramApi($this->botToken);
+        $url = $this->apiUrl . "setWebhook";
+        $response = $this->sendRequest($url, ['url' => $webhookUrl]);
 
-        if (isset($data['message'])) {
-            $chatId = $data['message']['chat']['id'];
-            $text = $data['message']['text'] ?? '';
+        return isset($response['ok']) && $response['ok'];
+    }
 
-            // Добавление chatId в базу
-            $userRepository->create($chatId);
+    /**
+     * Метод удаляет webhook
+     *
+     * @return bool
+     */
+    public function deleteWebhook(): bool
+    {
+        $url = $this->apiUrl . "deleteWebhook";
+        $response = $this->sendRequest($url);
 
-            // Пример обработки текстовых команд
-            if ($text === '/start') {
-                $telegramApi->sendMessage($chatId, "Добро пожаловать в бот самого полезного магазина!");
-            } else {
-                $telegramApi->sendMessage($chatId, "Неизвестная команда.");
-            }
-        }
+        return isset($response['ok']) && $response['ok'];
+    }
 
-        // Обработка callback-query
-        if (isset($data['callback_query'])) {
-            $chatId = $data['callback_query']['message']['chat']['id'];
-            $callbackData = $data['callback_query']['data'];
-
-            // Пример обработки callback-query
-            if ($callbackData === 'action_1') {
-                $telegramApi->sendMessage($chatId, "Вы выбрали действие 1.");
-            } else {
-                $telegramApi->sendMessage($chatId, "Неизвестное действие.");
-            }
-        }
+    /**
+     * Метод обрабатывает входящие обновления от Telegram
+     *
+     * @return mixed
+     */
+    public function getUpdate(): array
+    {
+        $update = file_get_contents("php://input");
+        return json_decode($update, true);
     }
 }
 
