@@ -67,9 +67,6 @@ ENV user=docker
 RUN adduser -D -u 1000 ${user} \
     && addgroup ${user} www-data
 
-# Добавление пользователя www-data в группу docker для доступа к общим правам
-RUN adduser www-data docker
-
 # Установка прав для директории приложения
 RUN chown -R www-data:www-data /app
 
