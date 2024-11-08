@@ -79,3 +79,7 @@ make tailwind-build
 ## Адрес бота:
 
 https://t.me/KanaiShopBot
+
+## Техническое задание
+
+[Посмотреть техническое задание](tz.pdf)
