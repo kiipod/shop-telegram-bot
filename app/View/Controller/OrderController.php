@@ -71,8 +71,8 @@ class OrderController
                     $message .= "Новый заказ № $orderId\n";
                     $message .= "Товар: {$product['name']}\n";
                     $message .= "Количество: $productCount\n";
-                    $message .= "Цена: " . number_format($product['price'], 2) . " ₽\n";
-                    $message .= "Сумма: " . number_format($product['price'] * $productCount, 2) . " ₽";
+                    $message .= "Цена: " . $product['price'] . " ₽\n";
+                    $message .= "Сумма: " . ($product['price'] * $productCount) . " ₽";
 
                     $telegramApi->sendMessage($chatId, $message);
                 } else {
