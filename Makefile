@@ -18,7 +18,7 @@ docker-down-prod:
 
 #MYSQL
 mysql-dump:
-	docker exec -i $(mysql) mysql -uroot -ppassword shop < tlg_dump.sql
+	docker exec -i $(mysql) mysql -ukiipod -p12345 shop < tlg_dump.sql
 
 #COMPOSER
 composer-install:
