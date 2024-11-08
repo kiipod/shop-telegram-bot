@@ -71,17 +71,12 @@ RUN adduser -D -u 1000 ${user} \
 RUN adduser www-data docker
 
 # Установка прав для директории приложения
-RUN chown -R docker:www-data /app
+RUN chown -R www-data:www-data /app
 
 # Настройка временных каталогов с нужными правами
 RUN chmod 777 -R /tmp && chmod o+t -R /tmp \
     && chmod 777 -R /var/log && chmod o+t -R /var/log \
     && chmod 777 -R /var/run && chmod o+t -R /var/run
-
-# Создание директории для загрузок, установка прав и владельца
-RUN mkdir -p /app/public/images \
-    && chown -R docker:www-data /app/public/images \
-    && chmod -R 775 /app/public/images \
 
 # Замена php.ini
 RUN mv /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
