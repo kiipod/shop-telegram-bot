@@ -59,7 +59,7 @@ class OrderController
 
             if ($orderId) {
                 echo "Заказ успешно добавлен! ID заказа: " . $orderId . " \n";
-                $product = $productRepository->getProductById($orderId);
+                $product = $productRepository->getProductById($productId);
 
                 // Получаем chat_id нового подписчика
                 $chatId = $userRepository->getNewSubscriberChatId();
