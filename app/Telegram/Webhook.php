@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Kiipod\ShopTelegramBot\Telegram;
 
+use Kiipod\ShopTelegramBot\Repositories\UserRepository;
+
 class Webhook
 {
     private string $apiUrl;
@@ -90,11 +92,15 @@ class Webhook
      */
     private function handleCommands(array $data): void
     {
+        $userRepository = new UserRepository();
         $telegramApi = new TelegramApi($this->botToken);
 
         if (isset($data['message'])) {
             $chatId = $data['message']['chat']['id'];
             $text = $data['message']['text'] ?? '';
+
+            // Добавление chatId в базу
+            $userRepository->create($chatId);
 
             // Пример обработки текстовых команд
             if ($text === '/start') {

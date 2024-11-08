@@ -19,24 +19,6 @@ class TelegramApi
     }
 
     /**
-     * Получает chat_id нового подписчика
-     * Используется при получении обновлений через вебхук.
-     *
-     * @return int|null
-     */
-    public function getNewSubscriberChatId(): ?int
-    {
-        $update = file_get_contents("php://input");
-        $data = json_decode($update, true);
-
-        if (isset($data['message']['chat']['id'])) {
-            return $data['message']['chat']['id'];
-        }
-
-        return null;
-    }
-
-    /**
      * Отправляет сообщение пользователю с указанным chat_id
      *
      * @param int $chatId
