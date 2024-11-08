@@ -63,15 +63,25 @@ RUN composer install
 # Добавление и настройка пользователя
 ENV user=docker
 
-RUN adduser -D -u 1000 ${user}
-RUN addgroup ${user} www-data
+# Создание пользователя и добавление его в группу www-data
+RUN adduser -D -u 1000 ${user} \
+    && addgroup ${user} www-data
 
-# Настройка прав
+# Добавление пользователя www-data в группу docker для доступа к общим правам
+RUN adduser www-data docker
+
+# Установка прав для директории приложения
 RUN chown -R docker:www-data /app
 
-RUN chmod 777 -R /tmp && chmod o+t -R /tmp
-RUN chmod 777 -R /var/log && chmod o+t -R /var/log
-RUN chmod 777 -R /var/run && chmod o+t -R /var/run
+# Настройка временных каталогов с нужными правами
+RUN chmod 777 -R /tmp && chmod o+t -R /tmp \
+    && chmod 777 -R /var/log && chmod o+t -R /var/log \
+    && chmod 777 -R /var/run && chmod o+t -R /var/run
+
+# Создание директории для загрузок, установка прав и владельца
+RUN mkdir -p /app/public/images \
+    && chown -R docker:www-data /app/public/images \
+    && chmod -R 775 /app/public/images \
 
 # Замена php.ini
 RUN mv /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
