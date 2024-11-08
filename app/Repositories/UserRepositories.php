@@ -9,4 +9,6 @@ interface UserRepositories
     public function create(int $chatId);
 
     public function getNewSubscriberChatId();
+
+    public function findByChatId(int $chatId);
 }

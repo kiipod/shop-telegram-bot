@@ -31,6 +31,13 @@ class OrderRepository implements OrderRepositories
         $this->db->connect($host, $username, $password, $database);
     }
 
+    /**
+     * Метод отвечает за создание заказа
+     *
+     * @param int $productId
+     * @param int $productCount
+     * @return int|null
+     */
     public function createOrder(int $productId, int $productCount): ?int
     {
         $pdo = $this->db->getConnection();

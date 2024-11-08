@@ -13,7 +13,7 @@ class FileUploadHelper
      *
      * @param string $uploadDir
      */
-    public function __construct(string $uploadDir = 'images/')
+    public function __construct(string $uploadDir)
     {
         $this->uploadDir = rtrim($uploadDir, '/') . '/';
     }
@@ -39,7 +39,7 @@ class FileUploadHelper
             // Составляем полный путь для загрузки
             $uploadPath = $this->uploadDir . basename($fileName);
 
-            // Пытаемся переместить файл в директорию загрузок
+            // Перемещаем файл в директорию загрузок
             if (move_uploaded_file($fileTmpPath, $uploadPath)) {
                 return $uploadPath; // Возвращаем путь к файлу при успешной загрузке
             } else {

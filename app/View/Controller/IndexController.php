@@ -14,18 +14,14 @@ class IndexController
      *
      * @return void
      */
-    public function index(): void
+    public function __invoke(): void
     {
         $templateHelper = new TemplateHelper();
         $productService = new ProductRepository();
 
-        // Получаем список продуктов из базы данных
         $products = $productService->getProducts();
 
-        // Передаем список продуктов в шаблон product.php
         $content = $templateHelper->includeTemplate('product.php', ['products' => $products]);
-
-        // Передаем сгенерированный контент в основной layout
         $layout = $templateHelper->includeTemplate('layout.php', ['content' => $content]);
 
         print($layout);
