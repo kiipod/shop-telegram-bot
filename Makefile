@@ -1,7 +1,6 @@
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
-.PHONY: docker-up docker-down docker-down-clear load-dump composer-update composer-du npm-install npm-update npm-build
+.PHONY: docker-up docker-down docker-up-prod docker-down-prod mysql-dump composer-install composer-update composer-du
 app := app
-app-npm := npm
 mysql := mysql
 
 #DOCKER
@@ -27,15 +26,3 @@ composer-update:
 	docker exec $(app) composer update
 composer-du:
 	docker exec $(app) composer du
-
-#NPM
-npm-install:
-	docker-compose run --rm --service-ports $(app-npm) install $(c)
-npm-update:
-	docker-compose run --rm --service-ports $(app-npm) update $(c)
-npm-build:
-	docker-compose run --rm --service-ports $(app-npm) run build $(c)
-
-#TAILWIND
-tailwind-build:
-	npx tailwindcss -i ./public/css/app.css -o ./public/css/output.css --watch

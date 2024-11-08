@@ -50,12 +50,10 @@ class OrderRepository implements OrderRepositories
                 $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 if ($product) {
-                    // Создаем новый заказ
                     $stmt = $pdo->prepare(
                         "INSERT INTO orders (product_id, product_count, product_name, product_price, created_at, status)
                                 VALUES (:product_id, :product_count, :product_name, :product_price, :created_at, :status)");
 
-                    // Выполнение запроса с передачей параметров
                     $stmt->execute([
                         'product_id' => $productId,
                         'product_count' => $productCount,

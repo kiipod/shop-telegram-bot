@@ -45,7 +45,6 @@ class UserRepository implements UserRepositories
             try {
                 $stmt = $pdo->prepare('INSERT INTO users (chat_id) VALUES (:chat_id)');
 
-                // Выполнение запроса с передачей параметров
                 $stmt->execute([
                     'chat_id' => $chatId,
                 ]);
@@ -75,7 +74,6 @@ class UserRepository implements UserRepositories
 
         if ($pdo) {
             try {
-                // Запрос для получения chat_id последнего пользователя
                 $stmt = $pdo->query('SELECT chat_id FROM users ORDER BY id DESC LIMIT 1');
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -83,7 +81,6 @@ class UserRepository implements UserRepositories
                 return $result ? (int)$result['chat_id'] : null;
 
             } catch (PDOException $e) {
-                // Обработка ошибки запроса
                 echo "Ошибка запроса: " . $e->getMessage();
                 return null;
             }

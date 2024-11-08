@@ -64,18 +64,6 @@ make composer-install
 make composer-du
 ```
 
-6. В проекте используется Tailwind, для установки выполните команду:
-
-```
-make npm-install
-```
-
-7. Для выполнения билда Tailwind выполните команду:
-
-```
-make tailwind-build
-```
-
 ## Адрес бота:
 
 https://t.me/KanaiShopBot

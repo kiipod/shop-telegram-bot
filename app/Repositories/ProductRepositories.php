@@ -8,5 +8,5 @@ interface ProductRepositories
 {
     public function getProducts();
 
-    public function createProduct(array $data);
+    public function getProductById(int $productId);
 }

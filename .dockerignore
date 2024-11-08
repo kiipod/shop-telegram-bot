@@ -1,11 +1,8 @@
 /.fleet
 /.idea
 /.vscode
-*cache
 .env
 .env.dev.example
-/node_modules
 /vendor
-public/images
 docker/dev/MySQL/lib
 docker/dev/Nginx/logs
