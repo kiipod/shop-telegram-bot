@@ -1,5 +1,5 @@
 <div class="flex items-center justify-center min-h-full bg-gray-100">
-    <form action="create_order.php" method="POST" class="max-w-lg mx-auto p-4 bg-white rounded shadow" enctype="multipart/form-data">
+    <form action="create-order.php" method="POST" class="max-w-lg mx-auto p-4 bg-white rounded shadow" enctype="multipart/form-data">
         <h2 class="text-lg font-bold mb-4">Добавить заказ</h2>
 
         <!-- Скрытое поле с product_id -->
@@ -12,7 +12,7 @@
         </div>
 
         <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2">Цена продукта:</label>
+            <label class="block text-gray-700 text-sm font-bold mb-2">Цена:</label>
             <span id="product-price"><?= number_format($product['price'], 2); ?></span> ₽
         </div>
 
@@ -22,15 +22,9 @@
             <input type="number" name="product_count" id="product_count" min="1" value="1" required class="block w-full border border-gray-300 rounded p-2">
         </div>
 
-        <!-- Поле для ввода номера телефона -->
-        <div class="mb-4">
-            <label for="phone" class="block text-gray-700 text-sm font-bold mb-2">Номер телефона:</label>
-            <input type="tel" name="phone" id="phone" required pattern="\+?[0-9]{10,15}" placeholder="+1234567890" class="block w-full border border-gray-300 rounded p-2">
-        </div>
-
         <!-- Отображение суммарной стоимости -->
         <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2">Суммарная стоимость:</label>
+            <label class="block text-gray-700 text-sm font-bold mb-2">Сумма:</label>
             <span id="total-price"><?= number_format($product['price'], 2); ?></span> ₽
         </div>
 

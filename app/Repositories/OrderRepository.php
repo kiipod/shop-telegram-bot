@@ -31,7 +31,7 @@ class OrderRepository implements OrderRepositories
         $this->db->connect($host, $username, $password, $database);
     }
 
-    public function createOrder(int $productId, int $productCount, string $phone): ?int
+    public function createOrder(int $productId, int $productCount): ?int
     {
         $pdo = $this->db->getConnection();
 
@@ -45,8 +45,8 @@ class OrderRepository implements OrderRepositories
                 if ($product) {
                     // Создаем новый заказ
                     $stmt = $pdo->prepare(
-                        "INSERT INTO orders (product_id, product_count, product_name, product_price, created_at, status, phone)
-                                VALUES (:product_id, :product_count, :product_name, :product_price, :created_at, :status, :phone)");
+                        "INSERT INTO orders (product_id, product_count, product_name, product_price, created_at, status)
+                                VALUES (:product_id, :product_count, :product_name, :product_price, :created_at, :status)");
 
                     // Выполнение запроса с передачей параметров
                     $stmt->execute([
@@ -55,8 +55,7 @@ class OrderRepository implements OrderRepositories
                         'product_name' => $product['name'],
                         'product_price' => $product['price'],
                         'created_at' => date('Y-m-d H:i:s'),
-                        'status' => 0,
-                        'phone' => $phone,
+                        'status' => 0
                     ]);
 
                     // Возвращаем ID последней вставленной записи
