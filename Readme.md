@@ -8,13 +8,15 @@
 ---
 
 _Не удаляйте и не обращайте внимание на файлы:_<br>
-_`.editorconfig`, `.gitattributes`, `.gitignore`._
+`.editorconfig`, `.gitattributes`, `.gitignore`.
 
 ---
 
 ## О проекте
 
-Telegram бот работающий с заказами сайта интернет магазина.
+Telegram бот работающий с заказами сайта интернет магазина — [подпишись на бота](https://t.me/KanaiShopBot)
+
+Ссылка на тестовую страницу для тестирования функционала: https://kiipod.ru
 
 ## Основные сценарии использования:
 
@@ -63,10 +65,6 @@ make composer-install
 ```
 make composer-du
 ```
-
-## Адрес бота:
-
-https://t.me/KanaiShopBot
 
 ## Техническое задание
 
