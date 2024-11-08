@@ -1,53 +1,33 @@
-<div class="flex items-center justify-center min-h-full bg-gray-100">
-    <form action="create-order.php" method="POST" class="max-w-lg mx-auto p-4 bg-white rounded shadow" enctype="multipart/form-data">
-        <h2 class="text-lg font-bold mb-4">Добавить заказ</h2>
+<form action="create-order.php" method="POST" class="order-form">
+    <h2 class="order-form__title">Создание заказа</h2>
 
-        <!-- Скрытое поле с product_id -->
-        <input type="hidden" name="product_id" value="<?= htmlspecialchars($product['id']); ?>">
+    <label for="product_id" class="order-form__label">Выберите товар:</label>
+    <select name="product_id" id="product_id" class="order-form__select" onchange="updateProductPrice()">
+        <?php foreach ($products as $product): ?>
+            <option value="<?= $product['id']; ?>" data-price="<?= htmlspecialchars($product['price']); ?>">
+                <?= htmlspecialchars($product['name']); ?> (<?= htmlspecialchars($product['price']); ?>)
+            </option>
+        <?php endforeach; ?>
+    </select>
 
-        <!-- Отображение информации о продукте -->
-        <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2">Название продукта:</label>
-            <span><?= htmlspecialchars($product['name']); ?></span>
-        </div>
+    <label for="product_price" class="order-form__label">Стоимость:</label>
+    <input type="text" name="product_price" id="product_price" readonly class="order-form__input order-form__input--readonly">
 
-        <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2">Цена:</label>
-            <span id="product-price"><?= number_format($product['price'], 2); ?></span> ₽
-        </div>
+    <label for="product_count" class="order-form__label">Количество:</label>
+    <input type="number" name="product_count" id="product_count" min="1" required class="order-form__input">
 
-        <!-- Поле для ввода количества -->
-        <div class="mb-4">
-            <label for="product_count" class="block text-gray-700 text-sm font-bold mb-2">Количество:</label>
-            <input type="number" name="product_count" id="product_count" min="1" value="1" required class="block w-full border border-gray-300 rounded p-2">
-        </div>
-
-        <!-- Отображение суммарной стоимости -->
-        <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2">Сумма:</label>
-            <span id="total-price"><?= number_format($product['price'], 2); ?></span> ₽
-        </div>
-
-        <!-- Кнопка отправки -->
-        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Создать заказ
-        </button>
-    </form>
-</div>
+    <button type="submit" class="order-form__button">Создать заказ</button>
+</form>
 
 <script>
-    // Получаем элементы для расчета
-    const productPrice = <?= $product['price']; ?>;
-    const productCountInput = document.getElementById('product_count');
-    const totalPriceElement = document.getElementById('total-price');
+    function updateProductPrice() {
+        const productSelect = document.getElementById("product_id");
+        const selectedOption = productSelect.options[productSelect.selectedIndex];
+        const productPrice = selectedOption.getAttribute("data-price");
 
-    // Функция для обновления суммы
-    function updateTotalPrice() {
-        const count = parseInt(productCountInput.value) || 1;
-        const totalPrice = productPrice * count;
-        totalPriceElement.textContent = totalPrice.toFixed(2);
+        document.getElementById("product_price").value = productPrice + " ₽";
     }
 
-    // Обновляем сумму при изменении количества
-    productCountInput.addEventListener('input', updateTotalPrice);
+    // Установим начальную стоимость первого продукта при загрузке страницы
+    document.addEventListener("DOMContentLoaded", updateProductPrice);
 </script>

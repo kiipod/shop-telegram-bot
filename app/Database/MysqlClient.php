@@ -32,7 +32,6 @@ class MysqlClient implements Database
 
             echo "Подключение к базе данных успешно выполнено.";
         } catch (PDOException $e) {
-            // Обработка ошибки подключения
             echo "Ошибка подключения к базе данных: " . $e->getMessage();
         }
     }

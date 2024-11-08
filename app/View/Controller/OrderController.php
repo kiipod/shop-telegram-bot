@@ -17,17 +17,16 @@ class OrderController
     /**
      * Метод отвечает за показ страницы с формой заказа
      *
-     * @param int $productId
      * @return void
      */
-    public function index(int $productId): void
+    public function index(): void
     {
         $templateHelper = new TemplateHelper();
         $productRepository = new ProductRepository();
 
-        $product = $productRepository->getProductById($productId);
+        $products = $productRepository->getProducts();
 
-        $content = $templateHelper->includeTemplate('order-form.php', ['product' => $product]);
+        $content = $templateHelper->includeTemplate('order-form.php', ['products' => $products]);
         $layout = $templateHelper->includeTemplate('layout.php', ['content' => $content]);
 
         print($layout);

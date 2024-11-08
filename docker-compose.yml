@@ -41,15 +41,3 @@ services:
             - ${MYSQL_PORT}:${MYSQL_PORT}
         networks:
             - bot-network
-
-    npm:
-        build: ./docker/dev/Node
-        container_name: npm
-        volumes:
-            - ${LOCAL_PATH_HOST}:${APP_PATH}:cached
-            - ${LOCAL_PATH_HOST}.env:${APP_PATH}/.env
-        working_dir: ${APP_PATH}
-        profiles: ["npm"]
-        entrypoint: ['npm']
-        networks:
-            - bot-network

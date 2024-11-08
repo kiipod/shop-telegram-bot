@@ -1,15 +1,7 @@
-/node_modules
-/vendor
-.env
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-npm-debug.log
-yarn-error.log
 /.fleet
 /.idea
 /.vscode
-*cache
+.env
+/vendor
 docker/dev/MySQL/lib
 docker/dev/Nginx/logs
-public/images

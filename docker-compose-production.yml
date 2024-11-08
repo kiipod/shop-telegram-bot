@@ -54,17 +54,6 @@ services:
     networks:
       - bot-network
 
-  npm:
-    build:
-      context: .
-      dockerfile: docker/prod/Node/Dockerfile
-    container_name: npm
-    working_dir: ${APP_PATH}
-    profiles: ["npm"]
-    entrypoint: ['npm']
-    networks:
-      - bot-network
-
 volumes:
   vendor:
   mysql:
