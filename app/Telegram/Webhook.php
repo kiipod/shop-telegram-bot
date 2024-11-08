@@ -71,7 +71,7 @@ class Webhook
     /**
      * Метод обрабатывает входящие обновления от Telegram
      *
-     * @return mixed
+     * @return array
      */
     public function getUpdate(): array
     {
