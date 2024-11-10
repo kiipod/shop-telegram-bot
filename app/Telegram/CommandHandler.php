@@ -97,11 +97,8 @@ class CommandHandler
                 $message .= "Сумма: {$total} ₽\n";
                 $message .= "Создан: {$createdAt}";
 
-                // Отправляем сообщение без кнопок
-                $this->telegramApi->sendMessage($chatId, $message);
-
-                // Формируем кнопки и отправляем их отдельно
-                $replyMarkup = json_encode([
+                // Формируем кнопки в правильном формате
+                $keyboard = [
                     'inline_keyboard' => [
                         [
                             [
@@ -110,12 +107,10 @@ class CommandHandler
                             ]
                         ]
                     ]
-                ]);
+                ];
 
-                // Отправляем кнопки отдельно после сообщения
-                $this->telegramApi->sendMessage($chatId, '', [
-                    'reply_markup' => $replyMarkup
-                ]);
+                // Отправляем сообщение с кнопкой
+                $this->telegramApi->sendMessage($chatId, $message, $keyboard);
             }
         } else {
             $this->telegramApi->sendMessage($chatId, "У вас нет заказов.");
