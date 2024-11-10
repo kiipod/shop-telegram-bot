@@ -98,7 +98,7 @@ class CommandHandler
                 $message .= "Создан: {$createdAt}";
 
                 // Кнопка с callback_data для каждого заказа
-                $keyboard = [
+                $replyMarkup = json_encode([
                     'inline_keyboard' => [
                         [
                             [
@@ -107,11 +107,11 @@ class CommandHandler
                             ]
                         ]
                     ]
-                ];
+                ]);
 
                 // Отправляем сообщение с кнопкой для текущего заказа
                 $this->telegramApi->sendMessage($chatId, $message, [
-                    'reply_markup' => json_encode($keyboard)
+                    'reply_markup' => $replyMarkup
                 ]);
             }
         } else {
