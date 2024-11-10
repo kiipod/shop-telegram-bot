@@ -97,18 +97,24 @@ class CommandHandler
                 $message .= "Сумма: {$total} ₽\n";
                 $message .= "Создан: {$createdAt}";
 
-                // Отправляем сообщение с кнопкой для текущего заказа
-                $this->telegramApi->sendMessage($chatId, $message, [
-                    'reply_markup' => json_encode(array(
-                        'inline_keyboard' => array(
-                            array(
-                                array(
-                                    'text' => 'Подробнее о заказе',
-                                    'callback_data' => 'order_{$orderId}',
-                                    )
-                            )
-                        ),
-                    )),
+                // Отправляем сообщение без кнопок
+                $this->telegramApi->sendMessage($chatId, $message);
+
+                // Формируем кнопки и отправляем их отдельно
+                $replyMarkup = json_encode([
+                    'inline_keyboard' => [
+                        [
+                            [
+                                'text' => "Подробнее о заказе №{$orderId}",
+                                'callback_data' => "order_{$orderId}"
+                            ]
+                        ]
+                    ]
+                ]);
+
+                // Отправляем кнопки отдельно после сообщения
+                $this->telegramApi->sendMessage($chatId, '', [
+                    'reply_markup' => $replyMarkup
                 ]);
             }
         } else {
