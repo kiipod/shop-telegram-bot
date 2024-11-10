@@ -24,6 +24,7 @@ class CommandHandler
      * Метод обрабатывает входящие команды и callback-запросы
      *
      * @param array $data
+     * @throws Exception
      */
     public function handleCommands(array $data): void
     {
@@ -105,7 +106,7 @@ class CommandHandler
                         [
                             [
                                 'text' => "Подробнее о заказе",
-                                'callback_data' => "order_{$orderId}"
+                                'callback_data' => "order_5"
                             ]
                         ]
                     ]
