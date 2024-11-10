@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Kiipod\ShopTelegramBot\Telegram;
 
+use DateTime;
+use Exception;
 use Kiipod\ShopTelegramBot\Repositories\OrderRepository;
 
 class CommandHandler
@@ -77,6 +79,7 @@ class CommandHandler
      *
      * @param int $chatId
      * @return void
+     * @throws Exception
      */
     private function sendOrdersList(int $chatId): void
     {
@@ -85,32 +88,37 @@ class CommandHandler
 
         if ($orders) {
             $message = "Список заказов:\n\n";
+            $keyboard = [];
 
             foreach ($orders as $order) {
                 $orderId = $order['id'];
-                $total = $order['price'] * $order['product_count'];
-                $createdAt = date('Y-m-d H:i', strtotime($order['created_at']));
+                $total = ($order['product_price'] * $order['product_count']);
+                $createdAt = (new DateTime($order['created_at']))->format('d F Y, H:i');
 
                 $message .= "Заказ № {$orderId}\n";
                 $message .= "Сумма: {$total} ₽\n";
-                $message .= "Создан: {$createdAt}\n";
+                $message .= "Создан: {$createdAt}\n\n";
 
-                // Добавляем кнопку для получения подробной информации о заказе
+                // Добавляем кнопку для каждого заказа в отдельную строку
                 $keyboard[] = [
-                    'text' => "Подробнее о заказе №{$orderId}",
-                    'callback_data' => "order_{$orderId}"
+                    [
+                        'text' => "Подробнее о заказе №{$orderId}",
+                        'callback_data' => "order_{$orderId}"
+                    ]
                 ];
             }
 
+            // Отправляем сообщение с кнопками
             $this->telegramApi->sendMessage($chatId, $message, [
                 'reply_markup' => json_encode([
-                    'inline_keyboard' => [$keyboard]
+                    'inline_keyboard' => $keyboard
                 ])
             ]);
         } else {
             $this->telegramApi->sendMessage($chatId, "У вас нет заказов.");
         }
     }
+
 
     /**
      * Извлекает ID заказа из callbackData
@@ -130,6 +138,7 @@ class CommandHandler
      * @param int $chatId
      * @param int|null $orderId
      * @return void
+     * @throws Exception
      */
     private function sendOrderDetails(int $chatId, ?int $orderId): void
     {
@@ -148,9 +157,9 @@ class CommandHandler
             return;
         }
 
-        $total = $order['price'] * $order['product_count'];
-        $createdAt = date('Y-m-d H:i', strtotime($order['created_at']));
-        $modifiedAt = date('Y-m-d H:i', strtotime($order['modified_at']));
+        $total = ($order['product_price'] * $order['product_count']);
+        $createdAt = (new DateTime($order['created_at']))->format('d F Y, H:i');
+        $modifiedAt = (new DateTime($order['modified_at']))->format('d F Y, H:i');
 
         $message = "Информация о заказе № {$orderId}\n";
         $message .= "Товар: {$order['product_name']}\n";
@@ -158,7 +167,7 @@ class CommandHandler
         $message .= "Цена: {$order['price']} ₽\n";
         $message .= "Сумма: {$total} ₽\n";
         $message .= "Создан: {$createdAt} \n";
-        $message .= "Изменене: {$modifiedAt}";
+        $message .= "Изменен: {$modifiedAt}";
 
         $this->telegramApi->sendMessage($chatId, $message);
     }
