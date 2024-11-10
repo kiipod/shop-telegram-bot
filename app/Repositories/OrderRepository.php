@@ -47,12 +47,6 @@ class OrderRepository implements OrderRepositories
                 $conditions = [];
                 $params = [];
 
-                // Фильтрация по ID заказа
-                if (isset($filters['id'])) {
-                    $conditions[] = 'id = :id';
-                    $params[':id'] = $filters['id'];
-                }
-
                 // Фильтрация по статусу
                 if (isset($filters['status'])) {
                     $conditions[] = 'status = :status';
@@ -77,6 +71,12 @@ class OrderRepository implements OrderRepositories
                     }
                 }
 
+                // Фильтрация по идентификатору товара
+                if (isset($filters['id'])) {
+                    $conditions[] = 'id = :id';
+                    $params[':id'] = $filters['id'];
+                }
+
                 // Добавляем условия в запрос
                 if ($conditions) {
                     $query .= ' WHERE ' . implode(' AND ', $conditions);
@@ -90,8 +90,7 @@ class OrderRepository implements OrderRepositories
                 $stmt = $pdo->prepare($query);
                 $stmt->execute($params);
 
-                // Возвращаем одну запись, если поиск по ID
-                return isset($filters['id']) ? $stmt->fetch(PDO::FETCH_ASSOC) : $stmt->fetchAll(PDO::FETCH_ASSOC);
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             } catch (PDOException $e) {
                 echo "Ошибка выполнения запроса: " . $e->getMessage();

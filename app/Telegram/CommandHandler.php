@@ -40,6 +40,7 @@ class CommandHandler
      * Метод обрабатывает команды бота
      *
      * @param array $message
+     * @throws Exception
      */
     private function handleMessage(array $message): void
     {
@@ -63,24 +64,15 @@ class CommandHandler
      */
     private function handleCallbackQuery(array $callbackQuery): void
     {
-        // Логирование входных данных
-        error_log("Received callbackQuery: " . print_r($callbackQuery, true));
-
         $chatId = $callbackQuery['message']['chat']['id'];
         $callbackData = $callbackQuery['data'];
 
-        // Логирование данных, полученных из callback
-        error_log("Callback data: " . $callbackData);
-
-        if (strpos($callbackData, 'order_') === 0) {
+        if (str_starts_with($callbackData, 'order_')) {
             // Извлекаем ID заказа и отправляем детали заказа
             $orderId = $this->extractOrderId($callbackData);
-            error_log("Extracted orderId: " . $orderId);
-
             $this->sendOrderDetails($chatId, $orderId);
         } else {
             $this->telegramApi->sendMessage($chatId, "Неизвестное действие.");
-            error_log("Unknown action for callbackData: " . $callbackData);
         }
     }
 
@@ -166,7 +158,7 @@ class CommandHandler
 
         $total = ($order['product_price'] * $order['product_count']);
         $createdAt = (new DateTime($order['created_at']))->format('d F Y, H:i');
-        $modifiedAt = (new DateTime($order['modified_at']))->format('d F Y, H:i');
+        $modifiedAt = $order['modified_at'] ? (new DateTime($order['modified_at']))->format('d F Y, H:i') : "Не изменялся";
 
         $message = "Информация о заказе № {$orderId}\n\n";
         $message .= "Товар: {$order['product_name']}\n";
