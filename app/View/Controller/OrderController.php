@@ -58,7 +58,7 @@ class OrderController
 
             if ($orderId) {
                 echo "Заказ успешно добавлен! ID заказа: " . $orderId . " \n";
-                $product = $productRepository->getProductById($productId);
+                $product = $productRepository->getProducts(['id' => $productId]);
 
                 // Получаем chat_id нового подписчика
                 $chatId = $userRepository->getNewSubscriberChatId();
@@ -66,7 +66,7 @@ class OrderController
                 // Проверяем, есть ли chat_id, и отправляем сообщение
                 if ($chatId) {
                     // Формируем сообщение с деталями заказа
-                    $message = "Ваш заказ успешно создан!\n";
+                    $message = "Ваш заказ успешно создан!\n\n";
                     $message .= "Новый заказ № $orderId\n";
                     $message .= "Товар: {$product['name']}\n";
                     $message .= "Количество: $productCount\n";

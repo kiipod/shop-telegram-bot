@@ -32,47 +32,42 @@ class ProductRepository implements ProductRepositories
     }
 
     /**
-     * Метод получает список продуктов из базы данных
+     * Метод получает список продуктов из базы данных с возможностью фильтрации
      *
+     * @param array $filters Фильтры для выборки продуктов (например: 'id' => 123)
      * @return array|null
      */
-    public function getProducts(): ?array
+    public function getProducts(array $filters = []): ?array
     {
         $pdo = $this->db->getConnection();
 
         if ($pdo) {
             try {
-                $stmt = $pdo->query('SELECT * FROM products');
+                $query = 'SELECT * FROM products';
+                $conditions = [];
+                $params = [];
+
+                // Фильтр по ID продукта
+                if (isset($filters['id'])) {
+                    $conditions[] = 'id = :id';
+                    $params[':id'] = $filters['id'];
+                }
+
+                // Если есть условия, добавляем их в запрос
+                if ($conditions) {
+                    $query .= ' WHERE ' . implode(' AND ', $conditions);
+                }
+
+                $stmt = $pdo->prepare($query);
+                $stmt->execute($params);
+
+                // Если фильтр по ID, возвращаем один продукт, иначе - список
+                if (isset($filters['id'])) {
+                    $product = $stmt->fetch(PDO::FETCH_ASSOC);
+                    return $product ?: null;
+                }
+
                 return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            } catch (PDOException $e) {
-                echo "Ошибка выполнения запроса: " . $e->getMessage();
-                return null;
-            }
-        }
-
-        // Возвращаем null, если соединение не установлено
-        return null;
-    }
-
-    /**
-     * Метод отвечает за поиск товара по ID
-     *
-     * @param int $productId
-     * @return array|null
-     */
-    public function getProductById(int $productId): ?array
-    {
-        $pdo = $this->db->getConnection();
-
-        if ($pdo) {
-            try {
-                $stmt = $pdo->prepare('SELECT * FROM products WHERE id = :id');
-
-                $stmt->execute(['id' => $productId]);
-
-                $product = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                return $product ?: null;
 
             } catch (PDOException $e) {
                 echo "Ошибка выполнения запроса: " . $e->getMessage();

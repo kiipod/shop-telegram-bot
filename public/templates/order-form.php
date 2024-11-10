@@ -5,7 +5,7 @@
     <select name="product_id" id="product_id" class="order-form__select" onchange="updateProductPrice()">
         <?php foreach ($products as $product): ?>
             <option value="<?= $product['id']; ?>" data-price="<?= htmlspecialchars($product['price']); ?>">
-                <?= htmlspecialchars($product['name']); ?> (<?= htmlspecialchars($product['price']); ?>)
+                <?= htmlspecialchars($product['name']); ?>
             </option>
         <?php endforeach; ?>
     </select>
