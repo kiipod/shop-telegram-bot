@@ -59,6 +59,7 @@ class CommandHandler
      * Метод обрабатывает callback-запросы
      *
      * @param array $callbackQuery
+     * @throws Exception
      */
     private function handleCallbackQuery(array $callbackQuery): void
     {
@@ -102,7 +103,7 @@ class CommandHandler
                     'inline_keyboard' => [
                         [
                             [
-                                'text' => "Подробнее о заказе №{$orderId}",
+                                'text' => "Подробнее о заказе",
                                 'callback_data' => "order_{$orderId}"
                             ]
                         ]
