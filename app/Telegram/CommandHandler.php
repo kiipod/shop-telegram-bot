@@ -87,38 +87,37 @@ class CommandHandler
         $orders = $orderRepository->getOrders();
 
         if ($orders) {
-            $message = "Список заказов:\n\n";
-            $keyboard = [];
-
             foreach ($orders as $order) {
                 $orderId = $order['id'];
                 $total = ($order['product_price'] * $order['product_count']);
                 $createdAt = (new DateTime($order['created_at']))->format('d F Y, H:i');
 
-                $message .= "Заказ № {$orderId}\n";
+                // Формируем сообщение для каждого заказа
+                $message = "Заказ № {$orderId}\n";
                 $message .= "Сумма: {$total} ₽\n";
-                $message .= "Создан: {$createdAt}\n\n";
+                $message .= "Создан: {$createdAt}";
 
-                // Добавляем кнопку для каждого заказа в отдельную строку
-                $keyboard[] = [
-                    [
-                        'text' => "Подробнее о заказе №{$orderId}",
-                        'callback_data' => "order_{$orderId}"
+                // Кнопка с callback_data для каждого заказа
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            [
+                                'text' => "Подробнее о заказе №{$orderId}",
+                                'callback_data' => "order_{$orderId}"
+                            ]
+                        ]
                     ]
                 ];
-            }
 
-            // Отправляем сообщение с кнопками
-            $this->telegramApi->sendMessage($chatId, $message, [
-                'reply_markup' => json_encode([
-                    'inline_keyboard' => $keyboard
-                ])
-            ]);
+                // Отправляем сообщение с кнопкой для текущего заказа
+                $this->telegramApi->sendMessage($chatId, $message, [
+                    'reply_markup' => json_encode($keyboard)
+                ]);
+            }
         } else {
             $this->telegramApi->sendMessage($chatId, "У вас нет заказов.");
         }
     }
-
 
     /**
      * Извлекает ID заказа из callbackData
