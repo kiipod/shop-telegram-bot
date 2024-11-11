@@ -68,20 +68,10 @@ class CommandHandler
         $chatId = $callbackQuery['message']['chat']['id'];
         $callbackData = $callbackQuery['data'];
 
-        // Отладка - вывод callbackData
-        $this->telegramApi->sendMessage($chatId, "callbackData: {$callbackData}");
-
         if (str_starts_with($callbackData, 'order_')) {
+            // Извлекаем ID заказа и отправляем детали заказа
             $orderId = $this->extractOrderId($callbackData);
-
-            // Отладка - вывод orderId
-            $this->telegramApi->sendMessage($chatId, "Extracted orderId: " . ($orderId !== null ? $orderId : "null"));
-
-            if ($orderId !== null) {
-                $this->sendOrderDetails($chatId, $orderId);
-            } else {
-                $this->telegramApi->sendMessage($chatId, "Ошибка: некорректный ID заказа.");
-            }
+            $this->sendOrderDetails($chatId, $orderId);
         } else {
             $this->telegramApi->sendMessage($chatId, "Неизвестное действие.");
         }
@@ -152,7 +142,6 @@ class CommandHandler
      */
     private function sendOrderDetails(int $chatId, ?int $orderId): void
     {
-        // Проверка на отсутствие номера заказа
         if ($orderId === null) {
             $this->telegramApi->sendMessage($chatId, "Необходимо указать ID заказа.");
             return;
@@ -161,9 +150,14 @@ class CommandHandler
         $orderRepository = new OrderRepository();
         $order = $orderRepository->getOrders(['id' => $orderId]);
 
-        // Проверка на существование заказа
         if (!$order) {
             $this->telegramApi->sendMessage($chatId, "Заказ с ID {$orderId} не существует.");
+            return;
+        }
+
+        // Проверяем все поля заказа
+        if (empty($order['product_name']) || empty($order['product_price']) || empty($order['product_count']) || empty($order['modified_at'])) {
+            $this->telegramApi->sendMessage($chatId, "Ошибка: не удалось загрузить полные данные заказа.");
             return;
         }
 
