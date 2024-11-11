@@ -150,20 +150,17 @@ class CommandHandler
         $orderRepository = new OrderRepository();
         $order = $orderRepository->getOrders(['id' => $orderId]);
 
+        // Добавьте вывод содержимого $order для отладки
+        $this->telegramApi->sendMessage($chatId, "Отладка: данные заказа - " . json_encode($order));
+
         if (!$order) {
             $this->telegramApi->sendMessage($chatId, "Заказ с ID {$orderId} не существует.");
             return;
         }
 
-        // Проверяем все поля заказа
-        if (empty($order['product_name']) || empty($order['product_price']) || empty($order['product_count'])) {
-            $this->telegramApi->sendMessage($chatId, "Ошибка: не удалось загрузить полные данные заказа.");
-            return;
-        }
-
         $total = ($order['product_price'] * $order['product_count']);
         $createdAt = (new DateTime($order['created_at']))->format('d F Y, H:i');
-        // $modifiedAt = $order['modified_at'] ? (new DateTime($order['modified_at']))->format('d F Y, H:i') : "Не изменялся";
+        $modifiedAt = $order['modified_at'] ? (new DateTime($order['modified_at']))->format('d F Y, H:i') : "Не изменялся";
 
         $message = "Информация о заказе № {$orderId}\n\n";
         $message .= "Товар: {$order['product_name']}\n";
@@ -171,7 +168,7 @@ class CommandHandler
         $message .= "Цена: {$order['product_price']} ₽\n";
         $message .= "Сумма: {$total} ₽\n";
         $message .= "Создан: {$createdAt} \n";
-        // $message .= "Изменен: {$modifiedAt}";
+        $message .= "Изменен: {$modifiedAt}";
 
         $this->telegramApi->sendMessage($chatId, $message);
     }
