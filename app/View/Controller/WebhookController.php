@@ -18,6 +18,7 @@ class WebhookController
      * Метод отвечает за логику работу webhook telegram
      *
      * @return void
+     * @throws Exception
      */
     public function __invoke(): void
     {
@@ -47,6 +48,9 @@ class WebhookController
 
         // Получаем обновления от Telegram
         $updates = $telegramWebhook->getUpdate();
+
+        // Записываем лог $updates в файл
+        $telegramWebhook->logUpdate($updates);
 
         // Проверка и добавление chat_id в базу данных, если его еще нет
         if (!empty($updates['message']['chat']['id'])) {
