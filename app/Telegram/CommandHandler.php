@@ -68,9 +68,15 @@ class CommandHandler
         $chatId = $callbackQuery['message']['chat']['id'];
         $callbackData = $callbackQuery['data'];
 
+        // Отладка - вывод callbackData
+        $this->telegramApi->sendMessage($chatId, "callbackData: {$callbackData}");
+
         if (str_starts_with($callbackData, 'order_')) {
-            // Извлекаем ID заказа и отправляем детали заказа
             $orderId = $this->extractOrderId($callbackData);
+
+            // Отладка - вывод orderId
+            $this->telegramApi->sendMessage($chatId, "Extracted orderId: " . ($orderId !== null ? $orderId : "null"));
+
             if ($orderId !== null) {
                 $this->sendOrderDetails($chatId, $orderId);
             } else {
