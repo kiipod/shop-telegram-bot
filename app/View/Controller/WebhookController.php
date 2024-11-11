@@ -67,10 +67,8 @@ class WebhookController
         $commandHandler = new CommandHandler($telegramApi);
         $commandHandler->handleCommands($updates);
 
-        // Подключаем view, передаем результаты установки webhook и обновления
         $content = $templateHelper->includeTemplate('webhook.php', [
-            'webhookStatus' => $webhookStatus,
-            'updates' => $updates,
+            'webhookStatus' => $webhookStatus
         ]);
 
         $layout = $templateHelper->includeTemplate('layout.php', ['content' => $content]);
