@@ -144,4 +144,78 @@ class OrderRepository implements OrderRepositories
 
         return null;
     }
+
+    /**
+     * Метод обновляет статус заказа
+     *
+     * @param int $orderId
+     * @param string $status
+     * @return bool
+     */
+    public function updateOrderStatus(int $orderId, string $status): bool
+    {
+        $pdo = $this->db->getConnection();
+
+        $statusMap = [
+            0 => 'new',
+            1 => 'done',
+        ];
+
+        if (!array_key_exists($status, $statusMap)) {
+            echo "Ошибка: Неверный статус. Доступные статусы: 'new' или 'done'.";
+            return false;
+        }
+
+        $numericStatus = $statusMap[$status];
+
+        if ($pdo) {
+            try {
+                $stmt = $pdo->prepare(
+                    "UPDATE orders
+                 SET status = :status, modified_at = :modified_at
+                 WHERE id = :id"
+                );
+
+                return $stmt->execute([
+                    'id' => $orderId,
+                    'status' => $numericStatus,
+                    'modified_at' => date('Y-m-d H:i:s')
+                ]);
+            } catch (PDOException $e) {
+                echo "Ошибка обновления статуса заказа: " . $e->getMessage();
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Метод отвечает за удаление заказа
+     *
+     * @param int $orderId
+     * @return bool
+     */
+    public function deleteOrder(int $orderId): bool
+    {
+        $pdo = $this->db->getConnection();
+
+        if ($pdo) {
+            try {
+                $stmt = $pdo->prepare(
+                    "DELETE FROM orders
+                 WHERE id = :id"
+                );
+
+                return $stmt->execute([
+                    'id' => $orderId
+                ]);
+            } catch (PDOException $e) {
+                echo "Ошибка удаления заказа: " . $e->getMessage();
+                return false;
+            }
+        }
+
+        return false;
+    }
 }

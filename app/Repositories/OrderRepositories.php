@@ -9,4 +9,8 @@ interface OrderRepositories
     public function getOrders(array $filters);
 
     public function createOrder(int $productId, int $productCount);
+
+    public function updateOrderStatus(int $orderId, string $status);
+
+    public function deleteOrder(int $orderId);
 }
