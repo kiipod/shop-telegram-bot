@@ -116,7 +116,6 @@ class OrderRepository implements OrderRepositories
 
         if ($pdo) {
             try {
-                // Получаем информацию о продукте
                 $product = $productRepository->getProducts(['id' => $productId]);
 
                 if ($product) {

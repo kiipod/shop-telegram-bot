@@ -63,9 +63,7 @@ class OrderController
                 // Получаем chat_id нового подписчика
                 $chatId = $userRepository->getNewSubscriberChatId();
 
-                // Проверяем, есть ли chat_id, и отправляем сообщение
                 if ($chatId) {
-                    // Формируем сообщение с деталями заказа
                     $message = "Ваш заказ успешно создан!\n\n";
                     $message .= "Новый заказ № $orderId\n";
                     $message .= "Товар: {$product['name']}\n";
@@ -73,7 +71,22 @@ class OrderController
                     $message .= "Цена: " . $product['price'] . " ₽\n";
                     $message .= "Сумма: " . ($product['price'] * $productCount) . " ₽";
 
-                    $telegramApi->sendMessage($chatId, $message);
+                    $keyboard = [
+                        'inline_keyboard' => [
+                            [
+                                [
+                                    'text' => 'Новый',
+                                    'callback_data' => 'order_new'
+                                ],
+                                [
+                                    'text' => 'Удалить',
+                                    'callback_data' => "order_delete"
+                                ]
+                            ]
+                        ]
+                    ];
+
+                    $telegramApi->sendMessage($chatId, $message, $keyboard);
                 } else {
                     echo "Ошибка: chat_id не найден. Сообщение не отправлено.";
                 }

@@ -52,8 +52,15 @@ class CommandHandler
             $this->telegramApi->sendMessage($chatId, "Добро пожаловать в бот самого полезного магазина!");
         } elseif ($text === '/orders') {
             $this->sendOrdersList($chatId);
-        } else {
-            $this->telegramApi->sendMessage($chatId, "Неизвестная команда.");
+        } elseif ($text === preg_match('/^\/order (\d+)$/', $text, $matches)) {
+            $orderId = (int)$matches[1];
+            $this->sendOrderDetails($chatId, $orderId);
+        } elseif ($text === preg_match('/^\/order (\d+)$/', $text, $matches)) {
+            $orderStatus = (string)$matches[1];
+            $this->sendStatusDetails($chatId, $orderStatus);
+        } elseif ($text === preg_match('/^\/order (\d+)$/', $text, $matches)) {
+            $orderPeriod = (string)$matches[1];
+            $this->sendOrdersPeriodFilter($chatId, $orderPeriod);
         }
     }
 
@@ -69,11 +76,14 @@ class CommandHandler
         $callbackData = $callbackQuery['data'];
 
         if (str_starts_with($callbackData, 'order_')) {
-            // Извлекаем ID заказа и отправляем детали заказа
             $orderId = $this->extractOrderId($callbackData);
             $this->sendOrderDetails($chatId, $orderId);
-        } else {
-            $this->telegramApi->sendMessage($chatId, "Неизвестное действие.");
+        } elseif ($callbackData === 'order_new') {
+            $orderStatus = $this->extractOrderStatus($callbackData);
+            $this->sendStatusDetails($chatId, $orderStatus);
+        } elseif ($callbackData === 'order_delete') {
+            $orderStatus = $this->extractOrderStatus($callbackData);
+            $this->sendStatusDetails($chatId, $orderStatus);
         }
     }
 
@@ -105,7 +115,7 @@ class CommandHandler
                     'inline_keyboard' => [
                         [
                             [
-                                'text' => "Подробнее о заказе",
+                                'text' => 'Подробнее о заказе',
                                 'callback_data' => "order_{$orderId}"
                             ]
                         ]
@@ -130,6 +140,18 @@ class CommandHandler
     {
         $orderId = (int) str_replace('order_', '', $callbackData);
         return $orderId > 0 ? $orderId : null;
+    }
+
+    /**
+     * Извлекает Статус заказа из callbackData
+     *
+     * @param string $callbackData
+     * @return string|null
+     */
+    private function extractOrderStatus(string $callbackData): ?string
+    {
+        $orderStatus = (string) str_replace('order_', '', $callbackData);
+        return $orderStatus != null ? $orderStatus : null;
     }
 
     /**
@@ -163,7 +185,7 @@ class CommandHandler
         // Продолжаем формирование сообщения, зная, что $order — это ассоциативный массив
         $total = ($order['product_price'] * $order['product_count']);
         $createdAt = (new DateTime($order['created_at']))->format('d F Y, H:i');
-        $modifiedAt = $order['modified_at'] ? (new DateTime($order['modified_at']))->format('d F Y, H:i') : "Не изменялся";
+        $modifiedAt = $order['modified_at'] ? (new DateTime($order['modified_at']))->format('d F Y, H:i') : "Статус не изменялся";
 
         $message = "Информация о заказе № {$order['id']}\n\n";
         $message .= "Товар: {$order['product_name']}\n";
@@ -173,6 +195,30 @@ class CommandHandler
         $message .= "Создан: {$createdAt} \n";
         $message .= "Изменен: {$modifiedAt}";
 
-        $this->telegramApi->sendMessage($chatId, $message);
+        // Формируем кнопки в правильном формате
+        $keyboard = [
+            'inline_keyboard' => [
+                [
+                    [
+                        'text' => 'Выполнен',
+                        'callback_data' => 'order_new'
+                    ],
+                    [
+                        'text' => 'Удалить',
+                        'callback_data' => 'order_delete'
+                    ]
+                ]
+            ]
+        ];
+
+        $this->telegramApi->sendMessage($chatId, $message, $keyboard);
+    }
+
+    private function sendStatusDetails(mixed $chatId, string $orderStatus)
+    {
+    }
+
+    private function sendOrdersPeriodFilter(mixed $chatId, string $orderPeriod)
+    {
     }
 }
