@@ -71,7 +71,11 @@ class CommandHandler
         if (str_starts_with($callbackData, 'order_')) {
             // Извлекаем ID заказа и отправляем детали заказа
             $orderId = $this->extractOrderId($callbackData);
-            $this->sendOrderDetails($chatId, $orderId);
+            if ($orderId !== null) {
+                $this->sendOrderDetails($chatId, $orderId);
+            } else {
+                $this->telegramApi->sendMessage($chatId, "Ошибка: некорректный ID заказа.");
+            }
         } else {
             $this->telegramApi->sendMessage($chatId, "Неизвестное действие.");
         }
