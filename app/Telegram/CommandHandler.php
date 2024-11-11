@@ -150,15 +150,17 @@ class CommandHandler
         $orderRepository = new OrderRepository();
         $order = $orderRepository->getOrders(['id' => $orderId]);
 
-        // Добавьте форматированный вывод содержимого $order для отладки
-        $this->telegramApi->sendMessage($chatId, "Отладка: данные заказа - " . json_encode($order, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        // Проверяем, является ли $order массивом массивов, и если да, извлекаем первый элемент
+        if (is_array($order) && isset($order[0])) {
+            $order = $order[0];
+        }
 
         if (!$order) {
             $this->telegramApi->sendMessage($chatId, "Заказ с ID {$orderId} не существует.");
             return;
         }
 
-        // Если данные корректно получены, вычисляем итоговую сумму и формируем сообщение
+        // Продолжаем формирование сообщения, зная, что $order — это ассоциативный массив
         $total = ($order['product_price'] * $order['product_count']);
         $createdAt = (new DateTime($order['created_at']))->format('d F Y, H:i');
         $modifiedAt = $order['modified_at'] ? (new DateTime($order['modified_at']))->format('d F Y, H:i') : "Не изменялся";
