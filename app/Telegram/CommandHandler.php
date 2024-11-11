@@ -150,19 +150,20 @@ class CommandHandler
         $orderRepository = new OrderRepository();
         $order = $orderRepository->getOrders(['id' => $orderId]);
 
-        // Добавьте вывод содержимого $order для отладки
-        $this->telegramApi->sendMessage($chatId, "Отладка: данные заказа - " . json_encode($order));
+        // Добавьте форматированный вывод содержимого $order для отладки
+        $this->telegramApi->sendMessage($chatId, "Отладка: данные заказа - " . json_encode($order, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         if (!$order) {
             $this->telegramApi->sendMessage($chatId, "Заказ с ID {$orderId} не существует.");
             return;
         }
 
+        // Если данные корректно получены, вычисляем итоговую сумму и формируем сообщение
         $total = ($order['product_price'] * $order['product_count']);
         $createdAt = (new DateTime($order['created_at']))->format('d F Y, H:i');
         $modifiedAt = $order['modified_at'] ? (new DateTime($order['modified_at']))->format('d F Y, H:i') : "Не изменялся";
 
-        $message = "Информация о заказе № {$orderId}\n\n";
+        $message = "Информация о заказе № {$order['id']}\n\n";
         $message .= "Товар: {$order['product_name']}\n";
         $message .= "Количество: {$order['product_count']}\n";
         $message .= "Цена: {$order['product_price']} ₽\n";
