@@ -106,7 +106,7 @@ class CommandHandler
                         [
                             [
                                 'text' => "Подробнее о заказе",
-                                'callback_data' => "order_5"
+                                'callback_data' => "order_{$orderId}"
                             ]
                         ]
                     ]
@@ -164,7 +164,7 @@ class CommandHandler
         $message = "Информация о заказе № {$orderId}\n\n";
         $message .= "Товар: {$order['product_name']}\n";
         $message .= "Количество: {$order['product_count']}\n";
-        $message .= "Цена: {$order['price']} ₽\n";
+        $message .= "Цена: {$order['product_price']} ₽\n";
         $message .= "Сумма: {$total} ₽\n";
         $message .= "Создан: {$createdAt} \n";
         $message .= "Изменен: {$modifiedAt}";
