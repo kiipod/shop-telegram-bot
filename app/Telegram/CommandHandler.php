@@ -57,7 +57,7 @@ class CommandHandler
             $this->sendOrderDetails($chatId, $orderId);
         } elseif ($text === preg_match('/^\/order (\d+)$/', $text, $matches)) {
             $orderStatus = (string)$matches[1];
-            $this->sendStatusDetails($chatId, $orderStatus);
+            $this->sendOrdersStatusFilter($chatId, $orderStatus);
         } elseif ($text === preg_match('/^\/order (\d+)$/', $text, $matches)) {
             $orderPeriod = (string)$matches[1];
             $this->sendOrdersPeriodFilter($chatId, $orderPeriod);
@@ -79,11 +79,14 @@ class CommandHandler
             $orderId = $this->extractOrderId($callbackData);
             $this->sendOrderDetails($chatId, $orderId);
         } elseif ($callbackData === 'order_new') {
-            $orderStatus = $this->extractOrderStatus($callbackData);
-            $this->sendStatusDetails($chatId, $orderStatus);
+            $orderStatus = $this->extractOrderString($callbackData);
+            $this->sendOrderStatus($chatId, $orderStatus);
+        } elseif ($callbackData === 'order_done') {
+            $orderStatus = $this->extractOrderString($callbackData);
+            $this->sendOrderStatus($chatId, $orderStatus);
         } elseif ($callbackData === 'order_delete') {
-            $orderStatus = $this->extractOrderStatus($callbackData);
-            $this->sendStatusDetails($chatId, $orderStatus);
+            $orderStatus = $this->extractOrderString($callbackData);
+            $this->sendOrderDeleteStatus($chatId, $orderStatus);
         }
     }
 
@@ -148,7 +151,7 @@ class CommandHandler
      * @param string $callbackData
      * @return string|null
      */
-    private function extractOrderStatus(string $callbackData): ?string
+    private function extractOrderString(string $callbackData): ?string
     {
         $orderStatus = (string) str_replace('order_', '', $callbackData);
         return $orderStatus != null ? $orderStatus : null;
@@ -214,11 +217,66 @@ class CommandHandler
         $this->telegramApi->sendMessage($chatId, $message, $keyboard);
     }
 
-    private function sendStatusDetails(mixed $chatId, string $orderStatus)
+    /**
+     * Метод отвечает за изменение статуса заказа
+     *
+     * @param int $chatId
+     * @param string $orderStatus
+     * @return void
+     */
+    private function sendOrderStatus(int $chatId, string $orderStatus): void
     {
+        $orderRepository = new OrderRepository();
+        $newStatus = $orderStatus === 'new' ? 1 : 0;
+
+        $orderRepository->updateOrderStatus($orderId, $orderStatus);
+
+        // Получение обновленных данных заказа
+        $order = $orderRepository->getOrders(['id' => $orderId]);
+
+        // Проверяем, является ли $order массивом массивов, и если да, извлекаем первый элемент
+        if (is_array($order) && isset($order[0])) {
+            $order = $order[0];
+        }
+
+        if (!$order) {
+            $this->telegramApi->sendMessage($chatId, "Ошибка: не удалось загрузить обновленные данные заказа.");
+            return;
+        }
+
+        $statusText = $newStatus === 1 ? "Выполнен" : "Новый";
+        $modifiedAt = (new DateTime())->format('d F Y, H:i');
+
+        $message = "Информация о заказе № {$order['id']}\n\n";
+        $message .= "Товар: {$order['product_name']}\n";
+        $message .= "Количество: {$order['product_count']}\n";
+        $message .= "Цена: {$order['product_price']} ₽\n";
+        $message .= "Сумма: " . ($order['product_price'] * $order['product_count']) . " ₽\n";
+        $message .= "Создан: {$order['created_at']} \n";
+        $message .= "Изменен: {$modifiedAt}\n";
+        $message .= "Статус: {$statusText}";
+
+        $buttonText = $newStatus === 1 ? 'Новый' : 'Выполнен';
+
+        $keyboard = [
+            'inline_keyboard' => [
+                [
+                    [
+                        'text' => $buttonText,
+                        'callback_data' => "order_" . ($newStatus ? 'new' : 'done')
+                    ]
+                ]
+            ]
+        ];
+
+        $this->telegramApi->editMessageText($chatId, $order['message_id'], $message, $keyboard);
     }
 
     private function sendOrdersPeriodFilter(mixed $chatId, string $orderPeriod)
+    {
+    }
+
+    private function sendOrderDeleteStatus(mixed $chatId, ?string $orderStatus)
     {
     }
 }

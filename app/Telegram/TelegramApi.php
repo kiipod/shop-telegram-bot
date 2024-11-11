@@ -65,4 +65,32 @@ class TelegramApi
 
         return isset($response['ok']) && $response['ok'];
     }
+
+    /**
+     * Метод отвечает за обновление сообщения
+     *
+     * @param int $chatId
+     * @param int $messageId
+     * @param string $text
+     * @param array|null $keyboard
+     * @return bool
+     */
+    public function editMessageText(int $chatId, int $messageId, string $text, ?array $keyboard = null): bool
+    {
+        $data = [
+            'chat_id' => $chatId,
+            'message_id' => $messageId,
+            'text' => $text,
+            'parse_mode' => 'HTML',
+        ];
+
+        if ($keyboard) {
+            $data['reply_markup'] = json_encode($keyboard);
+        }
+
+        $url = $this->apiUrl . "editMessageText";
+        $response = $this->sendRequest($url, $data);
+
+        return isset($response['ok']) && $response['ok'];
+    }
 }
