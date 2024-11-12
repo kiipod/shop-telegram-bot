@@ -55,24 +55,6 @@ class CommandHandler
             $this->telegramService->sendOrdersList($chatId);
         } elseif (preg_match('/^\/order(?:[_=\s])(\d+)$/', $text, $matches)) {
             $orderId = (int)$matches[1];
-
-            // Проверка: если ID пустое
-            if ($orderId === null) {
-                $this->telegramApi->sendMessage($chatId, "Необходимо указать ID заказа.");
-                return;
-            }
-
-            // Получаем заказ из репозитория для проверки существования
-            $orderRepository = new OrderRepository();
-            $order = $orderRepository->getOrders(['id' => $orderId]);
-
-            // Проверка: если заказ не найден
-            if (empty($order['id'])) {
-                $this->telegramApi->sendMessage($chatId, "Заказ с ID {$orderId} не существует.");
-                return;
-            }
-
-            // Отправка подробностей заказа
             $this->telegramService->sendOrderDetails($chatId, $orderId);
         } elseif (preg_match('/^\/orders(?:[_=\s])(new|done|today|week|month)$/', $text, $matches)) {
             $orderFilter = $matches[1];

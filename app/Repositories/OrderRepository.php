@@ -92,8 +92,15 @@ class OrderRepository implements OrderRepositories
                 $stmt = $pdo->prepare($query);
                 $stmt->execute($params);
 
-                // Если установлен флаг $singleRecord, возвращаем одну запись
-                return $singleRecord ? $stmt->fetch(PDO::FETCH_ASSOC) : $stmt->fetchAll(PDO::FETCH_ASSOC);
+                // Если установлен флаг $singleRecord, проверяем и возвращаем одну запись или null
+                if ($singleRecord) {
+                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                    return $result !== false ? $result : null;
+                }
+
+                // Для нескольких записей, возвращаем массив или null
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                return !empty($results) ? $results : null;
 
             } catch (PDOException $e) {
                 echo "Ошибка выполнения запроса: " . $e->getMessage();

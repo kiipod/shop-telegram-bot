@@ -67,7 +67,20 @@ class TelegramService
     public function sendOrderDetails(int $chatId, ?int $orderId): void
     {
         $orderRepository = new OrderRepository();
+
+        // Проверка: если ID не является положительным числом
+        if ($orderId <= 0) {
+            $this->telegramApi->sendMessage($chatId, "Необходимо указать корректный ID заказа.");
+            return;
+        }
+
         $order = $orderRepository->getOrders(['id' => $orderId]);
+
+        // Проверка: если заказ не найден (getOrders вернул null)
+        if ($order === null) {
+            $this->telegramApi->sendMessage($chatId, "Заказ с ID {$orderId} не существует.");
+            return;
+        }
 
         $modifiedAt = $order['modified_at'] ? (new DateTime($order['modified_at']))->format('d F Y, H:i') : "Статус не изменялся";
 
