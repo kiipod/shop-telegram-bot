@@ -53,13 +53,12 @@ class CommandHandler
             $this->telegramApi->sendMessage($chatId, "Добро пожаловать в бот самого полезного магазина!");
         } elseif ($text === '/orders') {
             $this->telegramService->sendOrdersList($chatId);
-        } elseif (preg_match('/^\/orders(?:[_=\s])(\d+)$/', $text, $matches)) {
+        } elseif (preg_match('/^\/order(?:[_=\s])(\d+)$/', $text, $matches)) {
             $orderId = (int)$matches[1];
 
             // Проверка: если ID пустое
             if ($orderId === null) {
                 $this->telegramApi->sendMessage($chatId, "Необходимо указать ID заказа.");
-                return;
             }
 
             // Получаем заказ из репозитория для проверки существования
@@ -67,9 +66,8 @@ class CommandHandler
             $order = $orderRepository->getOrders(['id' => $orderId]);
 
             // Проверка: если заказ не найден
-            if (empty($order)) {
+            if (empty($order['id'])) {
                 $this->telegramApi->sendMessage($chatId, "Заказ с ID {$orderId} не существует.");
-                return;
             }
 
             // Отправка подробностей заказа
