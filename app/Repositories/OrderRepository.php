@@ -56,7 +56,7 @@ class OrderRepository implements OrderRepositories
                 // Фильтрация по периоду
                 if (isset($filters['period'])) {
                     switch ($filters['period']) {
-                        case 'day':
+                        case 'today':
                             $conditions[] = 'created_at >= :day_start';
                             $params[':day_start'] = date('Y-m-d 00:00:00');
                             break;

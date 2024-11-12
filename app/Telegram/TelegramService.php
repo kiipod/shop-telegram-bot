@@ -231,7 +231,7 @@ class TelegramService
         }
 
         // Фильтрация по периоду
-        if (in_array($orderStatus, ['day', 'week', 'month'])) {
+        if (in_array($orderStatus, ['today', 'week', 'month'])) {
             $filters['period'] = $orderStatus;
         }
 

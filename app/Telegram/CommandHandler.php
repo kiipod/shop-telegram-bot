@@ -59,6 +59,7 @@ class CommandHandler
             // Проверка: если ID пустое
             if ($orderId === null) {
                 $this->telegramApi->sendMessage($chatId, "Необходимо указать ID заказа.");
+                return;
             }
 
             // Получаем заказ из репозитория для проверки существования
@@ -68,11 +69,12 @@ class CommandHandler
             // Проверка: если заказ не найден
             if (empty($order['id'])) {
                 $this->telegramApi->sendMessage($chatId, "Заказ с ID {$orderId} не существует.");
+                return;
             }
 
             // Отправка подробностей заказа
             $this->telegramService->sendOrderDetails($chatId, $orderId);
-        } elseif (preg_match('/^\/orders(?:[_=\s])(new|done|day|week|month)$/', $text, $matches)) {
+        } elseif (preg_match('/^\/orders(?:[_=\s])(new|done|today|week|month)$/', $text, $matches)) {
             $orderFilter = $matches[1];
             $this->telegramService->sendOrdersFilter($chatId, $orderFilter);
         }
