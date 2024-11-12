@@ -47,13 +47,15 @@ class TelegramApi
      * @param int $chatId
      * @param string $message
      * @param array|null $keyboard
+     * @param string $parseMode
      * @return bool
      */
-    public function sendMessage(int $chatId, string $message, ?array $keyboard = null): bool
+    public function sendMessage(int $chatId, string $message, ?array $keyboard = null, string $parseMode = 'Markdown'): bool
     {
         $data = [
             'chat_id' => $chatId,
             'text' => $message,
+            'parse_mode' => $parseMode,
         ];
 
         if ($keyboard) {
