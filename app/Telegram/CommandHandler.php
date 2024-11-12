@@ -48,23 +48,16 @@ class CommandHandler
         $chatId = $message['chat']['id'];
         $text = $message['text'] ?? '';
 
-        // Логирование текста, чтобы увидеть, что именно было получено
-        file_put_contents('php://stderr', "Received text: {$text}\n");
-
         if ($text === '/start') {
             $this->telegramApi->sendMessage($chatId, "Добро пожаловать в бот самого полезного магазина!");
         } elseif ($text === '/orders') {
             $this->sendOrdersList($chatId);
-        } elseif (preg_match('/^\/order (\d+)$/', $text, $matches)) {
-            // Логирование успешного совпадения
-            file_put_contents('php://stderr', "Order ID: {$matches[1]}\n");
-
-            // Если регулярное выражение сработало, извлекаем ID заказа
+        } elseif (preg_match('/^\/order[_=](\d+)$/', $text, $matches)) {
             $orderId = (int)$matches[1];
             $this->sendOrderDetails($chatId, $orderId);
-        } else {
-            // Логирование, если команда не распознана
-            file_put_contents('php://stderr', "No match for text: {$text}\n");
+        } elseif (preg_match('/^\/orders(?:[_=\s])(new|done|day|week|month)$/', $text, $matches)) {
+            $orderFilter = $matches[1];
+            $this->sendOrdersFilter($chatId, $orderFilter);
         }
     }
 
@@ -332,7 +325,53 @@ class CommandHandler
         }
     }
 
-    private function sendOrdersStatusFilter(int $chatId, string $orderStatus)
+    /**
+     * Метод отвечает за фильтрацию заказов
+     *
+     * @param int $chatId
+     * @param string $orderStatus
+     * @return void
+     * @throws Exception
+     */
+    private function sendOrdersFilter(int $chatId, string $orderStatus): void
     {
+        $filters = [];
+
+        // Фильтрация по статусу
+        if ($orderStatus === 'new' || $orderStatus === 'done') {
+            $filters['status'] = $orderStatus === 'new' ? 0 : 1;
+        }
+
+        // Фильтрация по периоду
+        if (in_array($orderStatus, ['day', 'week', 'month'])) {
+            $filters['period'] = $orderStatus;
+        }
+
+        // Получаем список заказов, применяя фильтры
+        $orderRepository = new OrderRepository();
+        $orders = $orderRepository->getOrders($filters);
+
+        if ($orders) {
+            foreach ($orders as $order) {
+                $message = "Заказ № {$order['id']}\n";
+                $message .= "Сумма: " . ($order['product_price'] * $order['product_count']) . " ₽\n";
+                $message .= "Создан: " . (new DateTime($order['created_at']))->format('d F Y, H:i');
+
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            [
+                                'text' => 'Подробнее о заказе',
+                                'callback_data' => "order_{$order['id']}"
+                            ]
+                        ]
+                    ]
+                ];
+
+                $this->telegramApi->sendMessage($chatId, $message, $keyboard);
+            }
+        } else {
+            $this->telegramApi->sendMessage($chatId, "Нет заказов по выбранному фильтру.");
+        }
     }
 }
