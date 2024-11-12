@@ -15,7 +15,7 @@ class EnvHelper
      * @return array
      * @throws Exception
      */
-    public function readEnv(string $filePath): array
+    public static function readEnv(string $filePath): array
     {
         if (!file_exists($filePath)) {
             throw new Exception("Файл .env не найден: $filePath");

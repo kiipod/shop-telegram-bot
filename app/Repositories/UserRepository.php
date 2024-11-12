@@ -19,16 +19,10 @@ class UserRepository implements UserRepositories
      */
     public function __construct()
     {
-        $envHelper = new EnvHelper();
-        $env = $envHelper->readEnv('../.env');
-
-        $host = $env['MYSQL_HOST'];
-        $username = $env['MYSQL_USERNAME'];
-        $password = $env['MYSQL_USER_PASSWORD'];
-        $database = $env['MYSQL_DATABASE'];
+        $env= EnvHelper::readEnv('../.env');
 
         $this->db = new MysqlClient();
-        $this->db->connect($host, $username, $password, $database);
+        $this->db->connect(host: $env['MYSQL_HOST'], user: $env['MYSQL_USERNAME'], password: $env['MYSQL_USER_PASSWORD'], database: $env['MYSQL_DATABASE']);
     }
 
     /**
@@ -95,7 +89,7 @@ class UserRepository implements UserRepositories
      * @param int $chatId
      * @return array|null
      */
-    public function findByChatId(int $chatId): ?array
+    private function findByChatId(int $chatId): ?array
     {
         $pdo = $this->db->getConnection();
 
@@ -113,5 +107,23 @@ class UserRepository implements UserRepositories
         }
 
         return null;
+    }
+
+    /**
+     * Метод проверяет существование пользователя в БД
+     *
+     * @param array|null $updates
+     * @return void
+     */
+    public function userIsExists(?array $updates): void
+    {
+        if (!empty($updates['message']['chat']['id'])) {
+            $chatId = $updates['message']['chat']['id'];
+
+            // Проверка существования chat_id, и если его нет - то создаем
+            if (!$this->findByChatId($chatId)) {
+                $this->create($chatId);
+            }
+        }
     }
 }

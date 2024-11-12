@@ -7,6 +7,7 @@ namespace Kiipod\ShopTelegramBot\Telegram;
 use DateTime;
 use Exception;
 use Kiipod\ShopTelegramBot\Repositories\OrderRepository;
+use Kiipod\ShopTelegramBot\Repositories\UserRepository;
 
 class TelegramService
 {
@@ -42,6 +43,48 @@ class TelegramService
     }
 
     /**
+     * Метод отправляет сообщение о новом заказе пользователю
+     *
+     * @param int $orderId
+     * @return void
+     */
+    public function sendNewOrderMessage(int $orderId): void
+    {
+        $orderRepository = new OrderRepository();
+        $userRepository = new UserRepository();
+        $order = $orderRepository->getOrders(['id' => $orderId]);
+
+        // Получаем chat_id нового подписчика
+        $chatId = $userRepository->getNewSubscriberChatId();
+
+        if ($chatId) {
+            $message = "Ваш заказ успешно создан!\n\n";
+            $message .= "Новый заказ № {$order['id']}\n";
+            $message .= "Товар: {$order['product_name']}\n";
+            $message .= "Количество: {$order['product_count']}\n";
+            $message .= "Цена: " . $order['product_price'] . " ₽\n";
+            $message .= "Сумма: " . ($order['product_price'] * $order['product_count']) . " ₽";
+
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        [
+                            'text' => 'Новый',
+                            'callback_data' => "order_new_{$order['id']}"
+                        ],
+                        [
+                            'text' => 'Удалить',
+                            'callback_data' => "order_confirm_{$order['id']}"
+                        ]
+                    ]
+                ]
+            ];
+
+            $this->telegramApi->sendMessage($chatId, $message, $keyboard);
+        }
+    }
+
+    /**
      * Метод отвечает за отправку списка заказов по команде /orders
      *
      * @param int $chatId
@@ -73,7 +116,7 @@ class TelegramService
                 $this->telegramApi->sendMessage($chatId, $message, $keyboard);
             }
         } else {
-            $this->telegramApi->sendMessage($chatId, "У вас нет заказов.");
+            $this->telegramApi->sendMessage($chatId, "В магазине нет заказов");
         }
     }
 

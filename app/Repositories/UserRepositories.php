@@ -10,5 +10,5 @@ interface UserRepositories
 
     public function getNewSubscriberChatId();
 
-    public function findByChatId(int $chatId);
+    public function userIsExists(array $updates);
 }
