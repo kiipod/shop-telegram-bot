@@ -29,11 +29,7 @@ class WebhookController
         try {
             $env = $envHelper->readEnv('../.env');
         } catch (Exception $e) {
-            // Если произошла ошибка при чтении .env файла, передаем ошибку в шаблон
-            $content = $templateHelper->includeTemplate('error.php', ['error' => "Ошибка при чтении .env файла: " . $e->getMessage()]);
-            $layout = $templateHelper->includeTemplate('layout.php', ['content' => $content]);
-            print($layout);
-            return;
+            echo "Ошибка при чтении .env файла: " . $e->getMessage();
         }
 
         // Установка webhook

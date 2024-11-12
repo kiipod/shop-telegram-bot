@@ -80,8 +80,7 @@ class TelegramApi
         $data = [
             'chat_id' => $chatId,
             'message_id' => $messageId,
-            'text' => $text,
-            'parse_mode' => 'HTML',
+            'text' => $text
         ];
 
         if ($keyboard) {
@@ -89,6 +88,26 @@ class TelegramApi
         }
 
         $url = $this->apiUrl . "editMessageText";
+        $response = $this->sendRequest($url, $data);
+
+        return isset($response['ok']) && $response['ok'];
+    }
+
+    /**
+     * Метод отвечает за удаление сообщения из чата
+     *
+     * @param int $chatId
+     * @param int $messageId
+     * @return bool
+     */
+    public function deleteMessage(int $chatId, int $messageId): bool
+    {
+        $data = [
+            'chat_id' => $chatId,
+            'message_id' => $messageId,
+        ];
+
+        $url = $this->apiUrl . "deleteMessage";
         $response = $this->sendRequest($url, $data);
 
         return isset($response['ok']) && $response['ok'];

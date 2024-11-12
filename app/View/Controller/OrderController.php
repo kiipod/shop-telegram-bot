@@ -44,7 +44,6 @@ class OrderController
         $env = $envHelper->readEnv('../.env');
         $botToken = $env['BOT_TOKEN'];
 
-        $productRepository = new ProductRepository();
         $orderRepository = new OrderRepository();
         $userRepository = new UserRepository();
         $telegramApi = new TelegramApi($botToken);
@@ -58,29 +57,29 @@ class OrderController
 
             if ($orderId) {
                 echo "Заказ успешно добавлен! ID заказа: " . $orderId . " \n";
-                $product = $productRepository->getProducts(['id' => $productId]);
+                $order = $orderRepository->getOrders(['id' => $orderId]);
 
                 // Получаем chat_id нового подписчика
                 $chatId = $userRepository->getNewSubscriberChatId();
 
                 if ($chatId) {
                     $message = "Ваш заказ успешно создан!\n\n";
-                    $message .= "Новый заказ № $orderId\n";
-                    $message .= "Товар: {$product['name']}\n";
-                    $message .= "Количество: $productCount\n";
-                    $message .= "Цена: " . $product['price'] . " ₽\n";
-                    $message .= "Сумма: " . ($product['price'] * $productCount) . " ₽";
+                    $message .= "Новый заказ № {$order['id']}\n";
+                    $message .= "Товар: {$order['product_name']}\n";
+                    $message .= "Количество: {$order['product_count']}\n";
+                    $message .= "Цена: " . $order['product_price'] . " ₽\n";
+                    $message .= "Сумма: " . ($order['product_price'] * $order['product_count']) . " ₽";
 
                     $keyboard = [
                         'inline_keyboard' => [
                             [
                                 [
                                     'text' => 'Новый',
-                                    'callback_data' => 'order_new'
+                                    'callback_data' => "order_new_{$order['id']}"
                                 ],
                                 [
                                     'text' => 'Удалить',
-                                    'callback_data' => "order_delete"
+                                    'callback_data' => "order_confirm_{$order['id']}"
                                 ]
                             ]
                         ]

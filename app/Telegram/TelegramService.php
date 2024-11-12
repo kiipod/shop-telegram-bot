@@ -6,5 +6,4 @@ namespace Kiipod\ShopTelegramBot\Telegram;
 
 class TelegramService
 {
-
 }

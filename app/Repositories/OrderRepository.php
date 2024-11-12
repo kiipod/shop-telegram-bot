@@ -71,10 +71,12 @@ class OrderRepository implements OrderRepositories
                     }
                 }
 
-                // Фильтрация по идентификатору товара
+                // Фильтрация по идентификатору заказа
+                $singleRecord = false;
                 if (isset($filters['id'])) {
                     $conditions[] = 'id = :id';
                     $params[':id'] = $filters['id'];
+                    $singleRecord = true;
                 }
 
                 // Добавляем условия в запрос
@@ -90,7 +92,8 @@ class OrderRepository implements OrderRepositories
                 $stmt = $pdo->prepare($query);
                 $stmt->execute($params);
 
-                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+                // Если установлен флаг $singleRecord, возвращаем одну запись
+                return $singleRecord ? $stmt->fetch(PDO::FETCH_ASSOC) : $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             } catch (PDOException $e) {
                 echo "Ошибка выполнения запроса: " . $e->getMessage();
@@ -202,10 +205,7 @@ class OrderRepository implements OrderRepositories
 
         if ($pdo) {
             try {
-                $stmt = $pdo->prepare(
-                    "DELETE FROM orders
-                 WHERE id = :id"
-                );
+                $stmt = $pdo->prepare("DELETE FROM orders WHERE id = :id");
 
                 return $stmt->execute([
                     'id' => $orderId
