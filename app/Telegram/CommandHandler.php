@@ -49,17 +49,50 @@ class CommandHandler
         $chatId = $message['chat']['id'];
         $text = $message['text'] ?? '';
 
-        if ($text === '/start') {
-            $this->telegramApi->sendMessage($chatId, "Добро пожаловать в бот самого полезного магазина!");
-        } elseif ($text === '/orders') {
-            $this->telegramService->sendOrdersList($chatId);
-        } elseif (preg_match('/^\/order(?:[_=\s])(\d+)$/', $text, $matches)) {
-            $orderId = (int)$matches[1];
-            $this->telegramService->sendOrderDetails($chatId, $orderId);
-        } elseif (preg_match('/^\/orders(?:[_=\s])(new|done|today|week|month)$/', $text, $matches)) {
-            $orderFilter = $matches[1];
-            $this->telegramService->sendOrdersFilter($chatId, $orderFilter);
+        // Массив команд и соответствующих действий
+        $commands = [
+            '/start' => fn () =>
+            $this->telegramApi->sendMessage($chatId, "Добро пожаловать в бот самого полезного магазина!"),
+
+            '/orders' => fn () => $this->telegramService->sendOrderLists($chatId),
+
+            '/help' => fn () => $this->telegramService->sendHelpMessage($chatId),
+        ];
+
+        // Проверка на команды из массива
+        if (isset($commands[$text])) {
+            $commands[$text]();
+            return;
         }
+
+        // Проверка, что команда начинается с /order без ID
+        if (preg_match('/^\/order(?:\s*)$/', $text)) {
+            $this->telegramApi->sendMessage($chatId, "Необходимо указать ID заказа.");
+            return;
+        }
+
+        // Паттерны для команд с параметрами
+        $patterns = [
+            // Проверка на наличие корректного ID после /order
+            '/^\/order(?:[_=\s])(\d+)$/' => function ($matches) use ($chatId) {
+                $orderId = (int)$matches[1];
+                $this->telegramService->sendOrderDetails($chatId, $orderId);
+            },
+
+            // Фильтрация заказов по статусу или периоду
+            '/^\/orders(?:[_=\s])(new|done|today|week|month)$/' => fn ($matches) =>
+            $this->telegramService->sendOrderFilters($chatId, $matches[1]),
+        ];
+
+        // Проверка на паттерны
+        foreach ($patterns as $pattern => $action) {
+            if (preg_match($pattern, $text, $matches)) {
+                $action($matches);
+                return;
+            }
+        }
+
+        $this->telegramApi->sendMessage($chatId, "Команда не распознана. Пожалуйста, проверьте правильность ввода.");
     }
 
     /**
