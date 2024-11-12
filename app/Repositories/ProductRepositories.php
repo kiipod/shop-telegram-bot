@@ -6,7 +6,5 @@ namespace Kiipod\ShopTelegramBot\Repositories;
 
 interface ProductRepositories
 {
-    public function getProducts();
-
-    public function getProductById(int $productId);
+    public function getProducts(array $filters);
 }

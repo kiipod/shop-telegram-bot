@@ -68,7 +68,7 @@ RUN adduser -D -u 1000 ${user} \
     && addgroup ${user} www-data
 
 # Установка прав для директории приложения
-RUN chown -R www-data:www-data /app
+RUN chown -R ${user}:www-data /app
 
 # Настройка временных каталогов с нужными правами
 RUN chmod 777 -R /tmp && chmod o+t -R /tmp \

@@ -18,6 +18,7 @@ class WebhookController
      * Метод отвечает за логику работу webhook telegram
      *
      * @return void
+     * @throws Exception
      */
     public function __invoke(): void
     {
@@ -28,11 +29,7 @@ class WebhookController
         try {
             $env = $envHelper->readEnv('../.env');
         } catch (Exception $e) {
-            // Если произошла ошибка при чтении .env файла, передаем ошибку в шаблон
-            $content = $templateHelper->includeTemplate('error.php', ['error' => "Ошибка при чтении .env файла: " . $e->getMessage()]);
-            $layout = $templateHelper->includeTemplate('layout.php', ['content' => $content]);
-            print($layout);
-            return;
+            echo "Ошибка при чтении .env файла: " . $e->getMessage();
         }
 
         // Установка webhook
@@ -47,6 +44,9 @@ class WebhookController
 
         // Получаем обновления от Telegram
         $updates = $telegramWebhook->getUpdate();
+
+        // Записываем лог $updates в файл
+        $telegramWebhook->logUpdate($updates);
 
         // Проверка и добавление chat_id в базу данных, если его еще нет
         if (!empty($updates['message']['chat']['id'])) {
@@ -63,10 +63,8 @@ class WebhookController
         $commandHandler = new CommandHandler($telegramApi);
         $commandHandler->handleCommands($updates);
 
-        // Подключаем view, передаем результаты установки webhook и обновления
         $content = $templateHelper->includeTemplate('webhook.php', [
-            'webhookStatus' => $webhookStatus,
-            'updates' => $updates,
+            'webhookStatus' => $webhookStatus
         ]);
 
         $layout = $templateHelper->includeTemplate('layout.php', ['content' => $content]);

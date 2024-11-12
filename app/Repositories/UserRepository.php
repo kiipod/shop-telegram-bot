@@ -53,7 +53,6 @@ class UserRepository implements UserRepositories
                 return (int)$pdo->lastInsertId();
 
             } catch (PDOException $e) {
-                // Обработка ошибки запроса
                 echo "Ошибка добавления пользователя: " . $e->getMessage();
                 return null;
             }
