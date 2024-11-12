@@ -48,19 +48,23 @@ class CommandHandler
         $chatId = $message['chat']['id'];
         $text = $message['text'] ?? '';
 
+        // Логирование текста, чтобы увидеть, что именно было получено
+        file_put_contents('php://stderr', "Received text: {$text}\n");
+
         if ($text === '/start') {
             $this->telegramApi->sendMessage($chatId, "Добро пожаловать в бот самого полезного магазина!");
         } elseif ($text === '/orders') {
             $this->sendOrdersList($chatId);
         } elseif (preg_match('/^\/order (\d+)$/', $text, $matches)) {
+            // Логирование успешного совпадения
+            file_put_contents('php://stderr', "Order ID: {$matches[1]}\n");
+
+            // Если регулярное выражение сработало, извлекаем ID заказа
             $orderId = (int)$matches[1];
             $this->sendOrderDetails($chatId, $orderId);
-        } elseif (preg_match('/^\/order (\d+)$/', $text, $matches)) {
-            $orderStatus = $matches[1];
-            $this->sendOrdersStatusFilter($chatId, $orderStatus);
-        } elseif (preg_match('/^\/order (\d+)$/', $text, $matches)) {
-            $orderPeriod = $matches[1];
-            $this->sendOrdersPeriodFilter($chatId, $orderPeriod);
+        } else {
+            // Логирование, если команда не распознана
+            file_put_contents('php://stderr', "No match for text: {$text}\n");
         }
     }
 
