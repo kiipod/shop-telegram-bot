@@ -257,7 +257,7 @@ class CommandHandler
         $message .= "Количество: {$order['product_count']}\n";
         $message .= "Цена: {$order['product_price']} ₽\n";
         $message .= "Сумма: " . ($order['product_price'] * $order['product_count']) . " ₽\n";
-        $message .= "Создан: {$order['created_at']} \n";
+        $message .= "Создан: " . (new DateTime($order['created_at']))->format('d F Y, H:i') . "\n";
         $message .= "Изменен: {$modifiedAt}";
 
         $buttonText = $newStatus ? 'Новый' : 'Выполнен';
@@ -268,6 +268,10 @@ class CommandHandler
                     [
                         'text' => $buttonText,
                         'callback_data' => "order_" . ($newStatus ? 'new' : 'done') . "_{$order['id']}"
+                    ],
+                    [
+                        'text' => 'Удалить',
+                        'callback_data' => "order_confirm_{$order['id']}"
                     ]
                 ]
             ]
