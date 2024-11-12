@@ -184,17 +184,21 @@ class TelegramService
             // Преобразуем строку в булево значение (new => false, done => true)
             $newStatus = $status === 'new' ? false : true;
             $orderRepository->updateOrderStatus($orderId, $newStatus);
-            $buttonText = $newStatus ? 'Новый' : 'Выполнен';
-        } else {
-            $buttonText = $order['status'] == 1 ? 'Выполнен' : 'Новый';
+
+            // Перезагружаем данные заказа, чтобы получить обновленный статус
+            $order = $orderRepository->getOrders(['id' => $orderId]);
         }
+
+        // Устанавливаем текст кнопки в зависимости от статуса
+        $buttonText = $order['status'] == 1 ? 'Выполнен' : 'Новый';
+        $callbackDataStatus = $order['status'] == 1 ? 'done' : 'new';
 
         $keyboard = [
             'inline_keyboard' => [
                 [
                     [
                         'text' => $buttonText,
-                        'callback_data' => "order_" . ($status ?? ($order['status'] == 1 ? 'done' : 'new')) . "_{$order['id']}"
+                        'callback_data' => "order_{$callbackDataStatus}_{$order['id']}"
                     ],
                     [
                         'text' => 'Удалить',
