@@ -67,7 +67,7 @@ class CommandHandler
 
         // Проверка, что команда начинается с /order без ID
         if (preg_match('/^\/order(?:\s*)$/', $text)) {
-            $this->telegramApi->sendMessage($chatId, "Необходимо указать ID заказа.");
+            $this->telegramApi->sendMessage($chatId, "Необходимо указать ID заказа");
             return;
         }
 
@@ -92,7 +92,7 @@ class CommandHandler
             }
         }
 
-        $this->telegramApi->sendMessage($chatId, "Команда не распознана. Пожалуйста, проверьте правильность ввода.");
+        $this->telegramApi->sendMessage($chatId, "Команда не распознана. Пожалуйста, проверьте правильность ввода");
     }
 
     /**
