@@ -52,7 +52,7 @@ class CommandHandler
             $this->telegramApi->sendMessage($chatId, "Добро пожаловать в бот самого полезного магазина!");
         } elseif ($text === '/orders') {
             $this->sendOrdersList($chatId);
-        } elseif (preg_match('/^\/order[_=](\d+)$/', $text, $matches)) {
+        } elseif (preg_match('/^\/orders[_=](\d+)$/', $text, $matches)) {
             $orderId = (int)$matches[1];
             $this->sendOrderDetails($chatId, $orderId);
         } elseif (preg_match('/^\/orders(?:[_=\s])(new|done|day|week|month)$/', $text, $matches)) {
@@ -98,7 +98,7 @@ class CommandHandler
                     break;
 
                 default:
-                    // Если статус не указан, просто отображаем детали заказа
+                    // По умолчанию отображаем детали заказа
                     $this->sendOrderDetails($chatId, $orderId);
                     break;
             }
