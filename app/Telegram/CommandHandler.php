@@ -52,14 +52,14 @@ class CommandHandler
             $this->telegramApi->sendMessage($chatId, "Добро пожаловать в бот самого полезного магазина!");
         } elseif ($text === '/orders') {
             $this->sendOrdersList($chatId);
-        } elseif ($text === preg_match('/^\/order (\d+)$/', $text, $matches)) {
+        } elseif (preg_match('/^\/order (\d+)$/', $text, $matches)) {
             $orderId = (int)$matches[1];
             $this->sendOrderDetails($chatId, $orderId);
-        } elseif ($text === preg_match('/^\/order (\d+)$/', $text, $matches)) {
-            $orderStatus = (string)$matches[1];
+        } elseif (preg_match('/^\/order (\d+)$/', $text, $matches)) {
+            $orderStatus = $matches[1];
             $this->sendOrdersStatusFilter($chatId, $orderStatus);
-        } elseif ($text === preg_match('/^\/order (\d+)$/', $text, $matches)) {
-            $orderPeriod = (string)$matches[1];
+        } elseif (preg_match('/^\/order (\d+)$/', $text, $matches)) {
+            $orderPeriod = $matches[1];
             $this->sendOrdersPeriodFilter($chatId, $orderPeriod);
         }
     }
@@ -123,7 +123,6 @@ class CommandHandler
 
         if ($orders) {
             foreach ($orders as $order) {
-                // Формируем сообщение для каждого заказа
                 $message = "Заказ № {$order['id']}\n";
                 $message .= "Сумма: " . ($order['product_price'] * $order['product_count']) . " ₽\n";
                 $message .= "Создан: " . (new DateTime($order['created_at']))->format('d F Y, H:i');
@@ -147,26 +146,24 @@ class CommandHandler
     }
 
     /**
-     * Извлекает ID заказа из callbackData
+     * Извлекает аргументы заказа из callbackData
      *
      * @param string $callbackData
      * @return array
      */
     private function parseOrderCallback(string $callbackData): array
     {
-        // Устанавливаем значения по умолчанию
         $result = [
             'status' => '',
             'orderId' => 0
         ];
 
-        // Пытаемся найти статус и ID
         if (preg_match('/^order_([a-zA-Z]+)_(\d+)$/', $callbackData, $matches)) {
-            // Строка вида "order_status_id"
+            // Строка вида "order_{status}_{id}"
             $result['status'] = $matches[1];
             $result['orderId'] = (int)$matches[2];
         } elseif (preg_match('/^order_(\d+)$/', $callbackData, $matches)) {
-            // Строка вида "order_id"
+            // Строка вида "order_{id}"
             $result['orderId'] = (int)$matches[1];
         }
 
@@ -211,7 +208,7 @@ class CommandHandler
                 [
                     [
                         'text' => 'Новый',
-                        'callback_data' => "order_done_{$order['id']}"
+                        'callback_data' => "order_new_{$order['id']}"
                     ],
                     [
                         'text' => 'Удалить',
