@@ -52,7 +52,7 @@ class CommandHandler
             $this->telegramApi->sendMessage($chatId, "Добро пожаловать в бот самого полезного магазина!");
         } elseif ($text === '/orders') {
             $this->sendOrdersList($chatId);
-        } elseif (preg_match('/^\/orders[_=](\d+)$/', $text, $matches)) {
+        } elseif (preg_match('/^\/orders(?:[_=\s])(\d+)$/', $text, $matches)) {
             $orderId = (int)$matches[1];
             $this->sendOrderDetails($chatId, $orderId);
         } elseif (preg_match('/^\/orders(?:[_=\s])(new|done|day|week|month)$/', $text, $matches)) {
@@ -185,7 +185,7 @@ class CommandHandler
         $orderRepository = new OrderRepository();
         $order = $orderRepository->getOrders(['id' => $orderId]);
 
-        if (!$order) {
+        if (empty($order)) {
             $this->telegramApi->sendMessage($chatId, "Заказ с ID {$orderId} не существует.");
             return;
         }
@@ -200,12 +200,21 @@ class CommandHandler
         $message .= "Создан: " . (new DateTime($order['created_at']))->format('d F Y, H:i') . "\n";
         $message .= "Изменен: {$modifiedAt}";
 
+        // Проверка статуса заказа
+        $statusText = 'Новый';
+        $callbackData = "order_new_{$order['id']}";
+
+        if ($order['status'] == 1) { // Если статус заказа 'выполнен' (1)
+            $statusText = 'Выполнен';
+            $callbackData = "order_done_{$order['id']}";
+        }
+
         $keyboard = [
             'inline_keyboard' => [
                 [
                     [
-                        'text' => 'Новый',
-                        'callback_data' => "order_new_{$order['id']}"
+                        'text' => $statusText,
+                        'callback_data' => $callbackData
                     ],
                     [
                         'text' => 'Удалить',

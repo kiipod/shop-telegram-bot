@@ -84,8 +84,6 @@ footer {
 .order-form__select,
 .order-form__input {
     display: block;
-    width: 100%; /* инпуты занимают 100% ширины формы */
-    height: 2.5rem; /* одинаковая высота для инпутов */
     margin-bottom: 1rem; /* 16px */
     padding: 0.5rem; /* 8px */
     border: 1px solid #D1D5DB; /* gray-300 */
