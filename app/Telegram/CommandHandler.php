@@ -125,7 +125,7 @@ class CommandHandler
             foreach ($orders as $order) {
                 // Формируем сообщение для каждого заказа
                 $message = "Заказ № {$order['id']}\n";
-                $message .= "Сумма: " . ($order['product_price'] * $order['product_count']) . " ₽";
+                $message .= "Сумма: " . ($order['product_price'] * $order['product_count']) . " ₽\n";
                 $message .= "Создан: " . (new DateTime($order['created_at']))->format('d F Y, H:i');
 
                 $keyboard = [
@@ -198,20 +198,20 @@ class CommandHandler
 
         $modifiedAt = $order['modified_at'] ? (new DateTime($order['modified_at']))->format('d F Y, H:i') : "Статус не изменялся";
 
-        $message = "Информация о заказе № {$order['id']}\n\n";
+        $message = "Заказ № {$order['id']}\n\n";
         $message .= "Товар: {$order['product_name']}\n";
         $message .= "Количество: {$order['product_count']}\n";
         $message .= "Цена: {$order['product_price']} ₽\n";
-        $message .= "Сумма: " . ($order['product_price'] * $order['product_count']) . " ₽";
-        $message .= "Создан: " . (new DateTime($order['created_at']))->format('d F Y, H:i');
+        $message .= "Сумма: " . ($order['product_price'] * $order['product_count']) . " ₽\n";
+        $message .= "Создан: " . (new DateTime($order['created_at']))->format('d F Y, H:i') . "\n";
         $message .= "Изменен: {$modifiedAt}";
 
         $keyboard = [
             'inline_keyboard' => [
                 [
                     [
-                        'text' => 'Выполнен',
-                        'callback_data' => "order_new_{$order['id']}"
+                        'text' => 'Новый',
+                        'callback_data' => "order_done_{$order['id']}"
                     ],
                     [
                         'text' => 'Удалить',
@@ -237,11 +237,12 @@ class CommandHandler
     private function sendOrderStatus(int $chatId, int $messageId, string $orderStatus, int $orderId): void
     {
         $orderRepository = new OrderRepository();
-        $newStatus = $orderStatus === 'new' ? 1 : 0;
 
-        $orderRepository->updateOrderStatus($orderId, $orderStatus);
+        // Преобразуем строку в булево значение (new => false, done => true)
+        $newStatus = $orderStatus === 'new' ? false : true;
 
-        // Получение обновленных данных заказа
+        $orderRepository->updateOrderStatus($orderId, $newStatus);
+
         $order = $orderRepository->getOrders(['id' => $orderId]);
 
         if (!$order) {
@@ -249,18 +250,17 @@ class CommandHandler
             return;
         }
 
-        $statusText = $newStatus === 1 ? "Выполнен" : "Новый";
+        $modifiedAt = $order['modified_at'] ? (new DateTime($order['modified_at']))->format('d F Y, H:i') : "Статус не изменялся";
 
-        $message = "Информация о заказе № {$order['id']}\n\n";
+        $message = "Заказ № {$order['id']}\n\n";
         $message .= "Товар: {$order['product_name']}\n";
         $message .= "Количество: {$order['product_count']}\n";
         $message .= "Цена: {$order['product_price']} ₽\n";
         $message .= "Сумма: " . ($order['product_price'] * $order['product_count']) . " ₽\n";
         $message .= "Создан: {$order['created_at']} \n";
-        $message .= "Изменен: " . (new DateTime($order['modified_at']))->format('d F Y, H:i');
-        $message .= "Статус: {$statusText}";
+        $message .= "Изменен: {$modifiedAt}";
 
-        $buttonText = $newStatus === 1 ? 'Новый' : 'Выполнен';
+        $buttonText = $newStatus ? 'Новый' : 'Выполнен';
 
         $keyboard = [
             'inline_keyboard' => [

@@ -75,7 +75,7 @@ class OrderController
                             [
                                 [
                                     'text' => 'Новый',
-                                    'callback_data' => "order_new_{$order['id']}"
+                                    'callback_data' => "order_done_{$order['id']}"
                                 ],
                                 [
                                     'text' => 'Удалить',

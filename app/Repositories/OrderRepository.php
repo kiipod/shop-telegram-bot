@@ -152,24 +152,12 @@ class OrderRepository implements OrderRepositories
      * Метод обновляет статус заказа
      *
      * @param int $orderId
-     * @param string $status
+     * @param bool $status
      * @return bool
      */
-    public function updateOrderStatus(int $orderId, string $status): bool
+    public function updateOrderStatus(int $orderId, bool $status): bool
     {
         $pdo = $this->db->getConnection();
-
-        $statusMap = [
-            0 => 'new',
-            1 => 'done',
-        ];
-
-        if (!array_key_exists($status, $statusMap)) {
-            echo "Ошибка: Неверный статус. Доступные статусы: 'new' или 'done'.";
-            return false;
-        }
-
-        $numericStatus = $statusMap[$status];
 
         if ($pdo) {
             try {
@@ -181,7 +169,7 @@ class OrderRepository implements OrderRepositories
 
                 return $stmt->execute([
                     'id' => $orderId,
-                    'status' => $numericStatus,
+                    'status' => $status ? 1 : 0,
                     'modified_at' => date('Y-m-d H:i:s')
                 ]);
             } catch (PDOException $e) {

@@ -10,7 +10,7 @@ interface OrderRepositories
 
     public function createOrder(int $productId, int $productCount);
 
-    public function updateOrderStatus(int $orderId, string $status);
+    public function updateOrderStatus(int $orderId, bool $status);
 
     public function deleteOrder(int $orderId);
 }
