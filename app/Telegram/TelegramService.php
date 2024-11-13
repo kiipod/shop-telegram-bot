@@ -30,14 +30,14 @@ class TelegramService
     public function sendHelpMessage(int $chatId): void
     {
         $message = "Список команд бота:\n\n";
-        $message .= "Перед использованием команд не забудьте поставить обратную косую черту * / *\n\n";
-        $message .= "* orders * - Выводит список последних 10 заказов, от новых к старым\n\n";
-        $message .= "* order ID * - Выводит информацию о заказе с указанным ID\n\n";
-        $message .= "* orders new * - Выводит заказы со статусом Новый\n\n";
-        $message .= "* orders done * - Выводит заказы со статусом Выполнен\n\n";
-        $message .= "* orders today * - Выводит заказы за текущий день\n\n";
-        $message .= "* orders week * - Выводит заказы за последнюю неделю\n\n";
-        $message .= "* orders month * - Выводит заказы за последний месяц\n\n";
+        $message .= "Перед использованием команд не забудьте поставить обратную косую черту ( / )\n\n";
+        $message .= "*orders* - Выводит список последних 10 заказов, от новых к старым\n\n";
+        $message .= "*order ID* - Выводит информацию о заказе с указанным ID\n\n";
+        $message .= "*orders new* - Выводит заказы со статусом Новый\n\n";
+        $message .= "*orders done* - Выводит заказы со статусом Выполнен\n\n";
+        $message .= "*orders today* - Выводит заказы за текущий день\n\n";
+        $message .= "*orders week* - Выводит заказы за последнюю неделю\n\n";
+        $message .= "*orders month* - Выводит заказы за последний месяц\n\n";
 
         $this->telegramApi->sendMessage($chatId, $message);
     }
@@ -53,6 +53,7 @@ class TelegramService
         $orderRepository = new OrderRepository();
         $userRepository = new UserRepository();
         $order = $orderRepository->getOrders(['id' => $orderId]);
+
         // Получаем chat_id нового подписчика
         $chatId = $userRepository->getNewSubscriberChatId();
         if ($chatId) {
@@ -76,6 +77,7 @@ class TelegramService
                     ]
                 ]
             ];
+
             $this->telegramApi->sendMessage($chatId, $message, $keyboard);
         }
     }
@@ -200,7 +202,6 @@ class TelegramService
             ]
         ];
 
-        // Обновление или отправка сообщения с актуальными данными заказа
         if ($messageId) {
             $this->telegramApi->editMessageText($chatId, $messageId, $message, $keyboard);
         } else {

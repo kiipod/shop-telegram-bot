@@ -22,9 +22,7 @@ class WebhookController
      */
     public function __invoke(): void
     {
-        $templateHelper = new TemplateHelper();
         $userRepository = new UserRepository();
-
         $env = EnvHelper::readEnv('../.env');
 
         $telegramWebhook = new Webhook(botToken: $env['BOT_TOKEN']);
@@ -48,8 +46,8 @@ class WebhookController
         $commandHandler = new CommandHandler($telegramApi);
         $commandHandler->handleCommands($updates);
 
-        $content = $templateHelper->includeTemplate('webhook.php', ['webhookStatus' => $webhookStatus]);
-        $layout = $templateHelper->includeTemplate('layout.php', ['content' => $content]);
+        $content = TemplateHelper::includeTemplate('webhook.php', ['webhookStatus' => $webhookStatus]);
+        $layout = TemplateHelper::includeTemplate('layout.php', ['content' => $content]);
 
         print($layout);
     }

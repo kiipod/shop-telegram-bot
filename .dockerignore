@@ -6,3 +6,5 @@
 /vendor
 docker/dev/MySQL/lib
 docker/dev/Nginx/logs
+tz.pdf
+public/webhook_log.txt
