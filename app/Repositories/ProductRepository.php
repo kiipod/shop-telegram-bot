@@ -19,16 +19,10 @@ class ProductRepository implements ProductRepositories
      */
     public function __construct()
     {
-        $envHelper = new EnvHelper();
-        $env = $envHelper->readEnv('../.env');
-
-        $host = $env['MYSQL_HOST'];
-        $username = $env['MYSQL_USERNAME'];
-        $password = $env['MYSQL_USER_PASSWORD'];
-        $database = $env['MYSQL_DATABASE'];
+        $env = EnvHelper::readEnv('../.env');
 
         $this->db = new MysqlClient();
-        $this->db->connect($host, $username, $password, $database);
+        $this->db->connect(host: $env['MYSQL_HOST'], user: $env['MYSQL_USERNAME'], password: $env['MYSQL_USER_PASSWORD'], database: $env['MYSQL_DATABASE']);
     }
 
     /**

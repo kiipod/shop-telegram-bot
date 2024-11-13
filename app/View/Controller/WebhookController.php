@@ -23,22 +23,14 @@ class WebhookController
     public function __invoke(): void
     {
         $templateHelper = new TemplateHelper();
-        $envHelper = new EnvHelper();
         $userRepository = new UserRepository();
 
-        try {
-            $env = $envHelper->readEnv('../.env');
-        } catch (Exception $e) {
-            echo "Ошибка при чтении .env файла: " . $e->getMessage();
-        }
+        $env = EnvHelper::readEnv('../.env');
 
-        // Установка webhook
-        $botToken = $env['BOT_TOKEN'];
-        $webhookUrl = 'https://kiipod.ru/webhook.php';
-        $telegramWebhook = new Webhook($botToken);
+        $telegramWebhook = new Webhook(botToken: $env['BOT_TOKEN']);
 
         // Проверяем установку webhook и передаем результат в шаблон
-        $webhookStatus = $telegramWebhook->setWebhook($webhookUrl)
+        $webhookStatus = $telegramWebhook->setWebhook(webhookUrl: $env['WEBHOOK_URL'])
             ? "Webhook установлен успешно!"
             : "Ошибка при установке webhook.";
 
@@ -49,24 +41,14 @@ class WebhookController
         $telegramWebhook->logUpdate($updates);
 
         // Проверка и добавление chat_id в базу данных, если его еще нет
-        if (!empty($updates['message']['chat']['id'])) {
-            $chatId = $updates['message']['chat']['id'];
-
-            // Проверка существования chat_id
-            if (!$userRepository->findByChatId($chatId)) {
-                $userRepository->create($chatId);
-            }
-        }
+        $userRepository->userIsExists($updates);
 
         // Инициализируем CommandHandler для обработки команд
-        $telegramApi = new TelegramApi($botToken);
+        $telegramApi = new TelegramApi(botToken: $env['BOT_TOKEN']);
         $commandHandler = new CommandHandler($telegramApi);
         $commandHandler->handleCommands($updates);
 
-        $content = $templateHelper->includeTemplate('webhook.php', [
-            'webhookStatus' => $webhookStatus
-        ]);
-
+        $content = $templateHelper->includeTemplate('webhook.php', ['webhookStatus' => $webhookStatus]);
         $layout = $templateHelper->includeTemplate('layout.php', ['content' => $content]);
 
         print($layout);

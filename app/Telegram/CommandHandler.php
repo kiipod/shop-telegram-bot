@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Kiipod\ShopTelegramBot\Telegram;
 
 use Exception;
-use Kiipod\ShopTelegramBot\Repositories\OrderRepository;
 
 class CommandHandler
 {
@@ -24,10 +23,10 @@ class CommandHandler
     /**
      * Метод обрабатывает входящие команды и callback-запросы
      *
-     * @param array $data
+     * @param array|null $data
      * @throws Exception
      */
-    public function handleCommands(array $data): void
+    public function handleCommands(?array $data): void
     {
         if (isset($data['message'])) {
             $this->handleMessage($data['message']);

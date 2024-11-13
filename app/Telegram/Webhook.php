@@ -71,9 +71,9 @@ class Webhook
     /**
      * Метод обрабатывает входящие обновления от Telegram
      *
-     * @return array
+     * @return array|null
      */
-    public function getUpdate(): array
+    public function getUpdate(): ?array
     {
         $update = file_get_contents("php://input");
         return json_decode($update, true);
@@ -82,10 +82,10 @@ class Webhook
     /**
      * Записывает обновления Telegram в текстовый файл.
      *
-     * @param array $updates
+     * @param array|null $updates
      * @return void
      */
-    public function logUpdate(array $updates): void
+    public function logUpdate(?array $updates): void
     {
         $logFile = 'updates_log.txt';
         $timestamp = date('Y-m-d H:i:s');
