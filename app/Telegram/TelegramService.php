@@ -7,6 +7,7 @@ namespace Kiipod\ShopTelegramBot\Telegram;
 use DateTime;
 use Exception;
 use Kiipod\ShopTelegramBot\Repositories\OrderRepository;
+use Kiipod\ShopTelegramBot\Repositories\UserRepository;
 
 class TelegramService
 {
@@ -42,6 +43,44 @@ class TelegramService
     }
 
     /**
+     * Метод отправляет сообщение о новом заказе пользователю
+     *
+     * @param int $orderId
+     * @return void
+     */
+    public function sendNewOrderMessage(int $orderId): void
+    {
+        $orderRepository = new OrderRepository();
+        $userRepository = new UserRepository();
+        $order = $orderRepository->getOrders(['id' => $orderId]);
+        // Получаем chat_id нового подписчика
+        $chatId = $userRepository->getNewSubscriberChatId();
+        if ($chatId) {
+            $message = "Ваш заказ успешно создан!\n\n";
+            $message .= "Новый заказ № {$order['id']}\n";
+            $message .= "Товар: {$order['product_name']}\n";
+            $message .= "Количество: {$order['product_count']}\n";
+            $message .= "Цена: " . $order['product_price'] . " ₽\n";
+            $message .= "Сумма: " . ($order['product_price'] * $order['product_count']) . " ₽";
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        [
+                            'text' => 'Новый',
+                            'callback_data' => "order_done_{$order['id']}"
+                        ],
+                        [
+                            'text' => 'Удалить',
+                            'callback_data' => "order_confirm_{$order['id']}"
+                        ]
+                    ]
+                ]
+            ];
+            $this->telegramApi->sendMessage($chatId, $message, $keyboard);
+        }
+    }
+
+    /**
      * Метод отвечает за отправку списка заказов по команде /orders
      *
      * @param int $chatId
@@ -73,7 +112,7 @@ class TelegramService
                 $this->telegramApi->sendMessage($chatId, $message, $keyboard);
             }
         } else {
-            $this->telegramApi->sendMessage($chatId, "У вас нет заказов.");
+            $this->telegramApi->sendMessage($chatId, "В магазине нет заказов");
         }
     }
 
@@ -115,19 +154,15 @@ class TelegramService
      * @return void
      * @throws Exception
      */
-    private function orderDetails(int $chatId, int $orderId, ?int $messageId = null, ?string $status = null): void
+    private function orderDetails(int $chatId, int $orderId, ?int $messageId = null, string $status = null): void
     {
         $orderRepository = new OrderRepository();
 
         if ($status !== null) {
-            // Преобразуем строку статуса в булево значение: 'new' -> false, 'done' -> true
-            $newStatus = $status === 'new' ? true : false;
-
-            // Обновляем статус в БД
+            $newStatus = !($status === 'new');
             $orderRepository->updateOrderStatus($orderId, $newStatus);
         }
 
-        // Загружаем обновленные данные заказа из БД
         $order = $orderRepository->getOrders(['id' => $orderId]);
 
         // Проверка: если заказ не найден
@@ -136,9 +171,7 @@ class TelegramService
             return;
         }
 
-        $modifiedAt = $order['modified_at']
-            ? (new DateTime($order['modified_at']))->format('d F Y, H:i')
-            : "Статус не изменялся";
+        $modifiedAt = $order['modified_at'] ? (new DateTime($order['modified_at']))->format('d F Y, H:i') : "Статус не изменялся";
 
         $message = "Заказ № {$order['id']}\n\n";
         $message .= "Товар: {$order['product_name']}\n";
@@ -148,16 +181,16 @@ class TelegramService
         $message .= "Создан: " . (new DateTime($order['created_at']))->format('d F Y, H:i') . "\n";
         $message .= "Изменен: {$modifiedAt}";
 
-        // Определяем текст для кнопки статуса на основе актуального статуса заказа из БД
-        $buttonText = $order['status'] ? 'Новый' : 'Выполнен';
-        $callbackStatus = $order['status'] ? 'new' : 'done';
+        // Определение текста кнопки на основе актуального статуса заказа
+        $buttonText = $order['status'] == 1 ? 'Выполнен' : 'Новый';
+        $newCallbackStatus = $order['status'] == 1 ? 'new' : 'done';
 
         $keyboard = [
             'inline_keyboard' => [
                 [
                     [
                         'text' => $buttonText,
-                        'callback_data' => "order_{$callbackStatus}_{$order['id']}"
+                        'callback_data' => "order_{$newCallbackStatus}_{$order['id']}"
                     ],
                     [
                         'text' => 'Удалить',
@@ -167,8 +200,8 @@ class TelegramService
             ]
         ];
 
+        // Обновление или отправка сообщения с актуальными данными заказа
         if ($messageId) {
-            // Редактирование сообщения, если оно уже существует
             $this->telegramApi->editMessageText($chatId, $messageId, $message, $keyboard);
         } else {
             $this->telegramApi->sendMessage($chatId, $message, $keyboard);
