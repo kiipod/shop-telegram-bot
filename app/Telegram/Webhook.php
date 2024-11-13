@@ -87,7 +87,7 @@ class Webhook
      */
     public function logUpdate(?array $updates): void
     {
-        $logFile = 'updates_log.txt';
+        $logFile = 'webhook_log.txt';
         $timestamp = date('Y-m-d H:i:s');
         $logData = "[$timestamp] Обновление: " . print_r($updates, true) . PHP_EOL;
 

@@ -21,13 +21,11 @@ class OrderController
      */
     public function index(): void
     {
-        $templateHelper = new TemplateHelper();
         $productRepository = new ProductRepository();
-
         $products = $productRepository->getProducts();
 
-        $content = $templateHelper->includeTemplate('order-form.php', ['products' => $products]);
-        $layout = $templateHelper->includeTemplate('layout.php', ['content' => $content]);
+        $content = TemplateHelper::includeTemplate('order-form.php', ['products' => $products]);
+        $layout = TemplateHelper::includeTemplate('layout.php', ['content' => $content]);
 
         print($layout);
     }

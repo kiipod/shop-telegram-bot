@@ -13,7 +13,7 @@ class TemplateHelper
      * @param array $data
      * @return string
      */
-    public function includeTemplate(string $name, array $data = []): string
+    public static function includeTemplate(string $name, array $data = []): string
     {
         $name = '/app/public/templates/' . $name;
         $result = '';
